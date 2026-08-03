@@ -1,0 +1,32 @@
+services:
+  - type: web
+    name: novalearn
+    env: docker
+    dockerfilePath: ./NewNovaLearn/Dockerfile
+    dockerContext: ./NewNovaLearn
+    healthCheckPath: /actuator/health
+    autoDeploy: true
+    envVars:
+      # ── Database ────────────────────────────────────────────────────────────
+      - key: DB_URL
+        sync: false          # Set manually in Render dashboard
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      # ── App config ──────────────────────────────────────────────────────────
+      - key: DDL_AUTO
+        value: update        # Switch to 'validate' once schema is stable
+      - key: THYMELEAF_CACHE
+        value: "true"
+      # ── Email (SMTP) ─────────────────────────────────────────────────────────
+      - key: MAIL_USERNAME
+        sync: false
+      - key: MAIL_PASSWORD
+        sync: false
+
+databases:
+  - name: novalearn-db
+    databaseName: novalearn
+    user: novalearn_user
+    plan: free
