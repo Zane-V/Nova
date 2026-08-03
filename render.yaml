@@ -2,8 +2,6 @@ services:
   - type: web
     name: novalearn
     env: docker
-    dockerfilePath: ./NewNovaLearn/Dockerfile
-    dockerContext: ./NewNovaLearn
     healthCheckPath: /actuator/health
     autoDeploy: true
     envVars:
