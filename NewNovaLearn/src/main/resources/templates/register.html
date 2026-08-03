@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | Nova Learning</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        .pw-rules-card {
+            margin-top: 0.75rem;
+            padding: 1rem 1.1rem;
+            background: rgba(37, 99, 235, 0.06);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            border-radius: 12px;
+            display: none;
+        }
+        .pw-rules-title {
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: #6b7280;
+            margin: 0 0 0.6rem 0;
+        }
+        .pw-rule {
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            font-size: 0.84rem;
+            color: #333;
+            margin-bottom: 0.35rem;
+        }
+        .pw-rule:last-child { margin-bottom: 0; }
+        .pw-rule i { width: 16px; text-align: center; font-size: 0.75rem; color: #d1d5db; }
+        .pw-rule.met { color: #16a34a; }
+        .pw-rule.met i { color: #16a34a; }
+        .strength-bar-wrap { margin-top: 0.6rem; margin-bottom: 0.1rem; }
+        .strength-bars { display: flex; gap: 5px; margin-bottom: 0.3rem; }
+        .strength-bar { flex: 1; height: 4px; border-radius: 4px; background: #e5e7eb; transition: background 0.3s; }
+        .strength-label { font-size: 0.72rem; color: #6b7280; }
+    </style>
+</head>
+<body>
+
+<section class="auth-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-5">
+                <div class="auth-card">
+
+                    <div class="text-center mb-4">
+                        <a th:href="@{/}" class="text-decoration-none">
+                            <i class="fas fa-user-plus fa-4x text-primary mb-3"></i>
+                        </a>
+                        <h2>Create Account</h2>
+                        <p>Step into your future. Join the learning revolution.</p>
+                    </div>
+
+                    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-circle me-1"></i>
+                        <span th:text="${errorMessage}">Error message here</span>
+                    </div>
+
+                    <div th:if="${fieldErrors}" class="alert alert-danger" role="alert">
+                        <ul class="mb-0 ps-3">
+                            <li th:each="err : ${fieldErrors}" th:text="${err.key} + ': ' + ${err.value}"></li>
+                        </ul>
+                    </div>
+
+                    <form th:action="@{/register}" th:object="${registerForm}" method="POST" id="registerForm">
+
+                        <div class="mb-3">
+                            <label class="form-label">I am joining as a...</label>
+                            <div class="d-flex gap-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="role-student"
+                                           value="STUDENT" th:field="*{role}" required>
+                                    <label class="form-check-label" for="role-student">
+                                        <i class="far fa-user me-1"></i>Student
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="role-lecturer"
+                                           value="LECTURER" th:field="*{role}">
+                                    <label class="form-check-label" for="role-lecturer">
+                                        <i class="fas fa-book-open me-1"></i>Lecturer
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="fullName">Full Name</label>
+                            <input type="text" class="form-control" id="fullName"
+                                   th:field="*{fullName}" placeholder="Enter your full name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="nickname">Nickname</label>
+                            <input type="text" class="form-control" id="nickname"
+                                   th:field="*{nickname}" placeholder="What should we call you?" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label" for="email">Email Address</label>
+                            <input type="email" class="form-control" id="email"
+                                   th:field="*{email}" placeholder="name@example.com" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label" for="password">Password</label>
+                            <div class="input-group">
+                                <input type="password" class="form-control" id="password"
+                                       th:field="*{password}" placeholder="Create a strong password"
+                                       required autocomplete="new-password">
+                                <span class="input-group-text" id="togglePwd" style="cursor:pointer;">
+                                    <i class="far fa-eye"></i>
+                                </span>
+                            </div>
+
+                            <div class="strength-bar-wrap" id="strengthWrap" style="display:none;">
+                                <div class="strength-bars">
+                                    <div class="strength-bar" id="sbar1"></div>
+                                    <div class="strength-bar" id="sbar2"></div>
+                                    <div class="strength-bar" id="sbar3"></div>
+                                </div>
+                                <span class="strength-label" id="strengthLabel">Too weak</span>
+                            </div>
+
+                            <div class="pw-rules-card">
+                                <p class="pw-rules-title">Password requirements</p>
+                                <div class="pw-rule" id="rule-length">
+                                    <i class="fas fa-times-circle"></i> At least 8 characters
+                                </div>
+                                <div class="pw-rule" id="rule-letter">
+                                    <i class="fas fa-times-circle"></i> At least one letter (a&ndash;z or A&ndash;Z)
+                                </div>
+                                <div class="pw-rule" id="rule-number">
+                                    <i class="fas fa-times-circle"></i> At least one number (0&ndash;9)
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="hero-btn w-100" id="submitBtn">
+                            Create Account &nbsp;<i class="fas fa-arrow-right"></i>
+                        </button>
+
+                    </form>
+
+                    <hr>
+
+                    <p class="text-center">
+                        Already have an account?
+                        <a th:href="@{/login}">Sign In</a>
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="/assets/js/script.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePwd = document.getElementById('togglePwd');
+        const pwdInput = document.getElementById('password');
+        const rulesCard = document.querySelector('.pw-rules-card');
+        const strengthWrap = document.getElementById('strengthWrap');
+        const strengthLabel = document.getElementById('strengthLabel');
+        const sbar1 = document.getElementById('sbar1');
+        const sbar2 = document.getElementById('sbar2');
+        const sbar3 = document.getElementById('sbar3');
+        const ruleLength = document.getElementById('rule-length');
+        const ruleLetter = document.getElementById('rule-letter');
+        const ruleNumber = document.getElementById('rule-number');
+
+        const COLOR_WEAK = '#ef4444';
+        const COLOR_MEDIUM = '#f59e0b';
+        const COLOR_STRONG = '#16a34a';
+        const COLOR_EMPTY = '#e5e7eb';
+
+        togglePwd.addEventListener('click', function () {
+            const isPassword = pwdInput.type === 'password';
+            pwdInput.type = isPassword ? 'text' : 'password';
+            this.querySelector('i').classList.toggle('fa-eye', !isPassword);
+            this.querySelector('i').classList.toggle('fa-eye-slash', isPassword);
+        });
+
+        pwdInput.addEventListener('focus', function () {
+            rulesCard.style.display = 'block';
+            strengthWrap.style.display = this.value.length > 0 ? 'block' : 'none';
+        });
+
+        pwdInput.addEventListener('blur', function () {
+            const val = this.value;
+            const allMet = val.length >= 8 && /[A-Za-z]/.test(val) && /[0-9]/.test(val);
+            if (allMet) {
+                rulesCard.style.display = 'none';
+                strengthWrap.style.display = 'none';
+            }
+        });
+
+        function setRule(el, isMet) {
+            const icon = el.querySelector('i');
+            if (isMet) {
+                el.classList.add('met');
+                icon.className = 'fas fa-check-circle';
+            } else {
+                el.classList.remove('met');
+                icon.className = 'fas fa-times-circle';
+            }
+        }
+
+        pwdInput.addEventListener('input', function () {
+            const val = this.value;
+            const okLength = val.length >= 8;
+            const okLetter = /[A-Za-z]/.test(val);
+            const okNumber = /[0-9]/.test(val);
+
+            setRule(ruleLength, okLength);
+            setRule(ruleLetter, okLetter);
+            setRule(ruleNumber, okNumber);
+
+            const score = [okLength, okLetter, okNumber].filter(Boolean).length;
+            strengthWrap.style.display = val.length > 0 ? 'block' : 'none';
+
+            let barColor, labelText, labelColor;
+            if (score === 1) { barColor = COLOR_WEAK; labelText = 'Too weak'; labelColor = COLOR_WEAK; }
+            else if (score === 2) { barColor = COLOR_MEDIUM; labelText = 'Getting stronger'; labelColor = COLOR_MEDIUM; }
+            else if (score === 3) { barColor = COLOR_STRONG; labelText = 'Strong password ✓'; labelColor = COLOR_STRONG; }
+            else { barColor = COLOR_EMPTY; labelText = ''; labelColor = '#6b7280'; }
+
+            sbar1.style.background = score >= 1 ? barColor : COLOR_EMPTY;
+            sbar2.style.background = score >= 2 ? barColor : COLOR_EMPTY;
+            sbar3.style.background = score >= 3 ? barColor : COLOR_EMPTY;
+            strengthLabel.textContent = labelText;
+            strengthLabel.style.color = labelColor;
+        });
+
+        document.getElementById('registerForm').addEventListener('submit', function (e) {
+            const val = pwdInput.value;
+            const ok = val.length >= 8 && /[A-Za-z]/.test(val) && /[0-9]/.test(val);
+            if (!ok) {
+                e.preventDefault();
+                rulesCard.style.display = 'block';
+                pwdInput.dispatchEvent(new Event('input'));
+                pwdInput.focus();
+            }
+        });
+    });
+</script>
+</body>
+</html>

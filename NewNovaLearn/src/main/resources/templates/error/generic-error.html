@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Error - NovaLearn</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div style="max-width:600px; margin:2rem auto; padding:1.5rem; background:var(--card-bg); border:1px solid var(--border-color); border-radius:12px;">
+        <h2 style="color:var(--danger-color, #dc2626);">Something went wrong</h2>
+        <p th:text="${errorMessage}">An error occurred.</p>
+        <a href="/" class="btn btn-primary" style="margin-top:1rem;">Return Home</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Learning</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body>
+
+<!-- Navbar -->
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+ <!-- Hero Section -->
+
+<section class="hero-section">
+
+
+    <div class="container">
+
+
+        <div class="row align-items-center">
+
+
+            <div class="col-lg-6 hero-content">
+
+
+                <span class="hero-tag">
+                    🚀 Learn New Skills. Build Your Future.
+                </span>
+
+
+                <h1>
+                    Master Skills Online With
+                    <span class="text-primary">
+                        Nova Learning
+                    </span>
+                </h1>
+
+
+
+                <h2>
+                    <span id="typing-text"></span>
+                </h2>
+
+
+
+                <p>
+                    Learn from expert instructors through practical courses,
+                    certifications, and real-world projects designed for your career growth.
+                </p>
+
+
+
+                <div class="hero-buttons">
+
+
+                    <a th:href="@{/register}" class="hero-btn">
+                         Start Learning
+                    </a>
+
+                    <a th:href="@{/courses}" class="hero-outline">
+                         Explore Courses
+                    </a>
+
+                </div>
+
+
+
+                <div class="hero-trust">
+
+
+                    <div>
+                        <h3>50K+</h3>
+                        <p>Learners</p>
+                    </div>
+
+
+                    <div>
+                        <h3>500+</h3>
+                        <p>Courses</p>
+                    </div>
+
+
+                    <div>
+                        <h3>150+</h3>
+                        <p>Experts</p>
+                    </div>
+
+
+                </div>
+
+
+
+            </div>
+
+
+
+
+
+            <div class="col-lg-6">
+
+
+                <div class="hero-image">
+
+
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=900&q=80"
+                    alt="Online Learning">
+
+
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+
+
+</section>
+
+<!-- ================= FEATURED COURSES ================= -->
+
+<section class="py-5 bg-light">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="fw-bold">Featured Courses</h2>
+
+            <p class="text-muted">
+                Learn from top instructors with our most popular courses.
+            </p>
+
+        </div>
+
+        <div class="row g-4">
+
+            <!-- Course 1 -->
+
+            <div class="col-lg-4">
+
+                <div class="course-card reveal">
+
+                    <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=900"
+                         class="img-fluid"
+                         alt="Web Development">
+
+                    <div class="course-content">
+
+                        <span class="course-category">
+                            Web Development
+                        </span>
+
+                        <h4>
+                            Full Stack Web Development
+                        </h4>
+
+                        <p>
+                            HTML, CSS, JavaScript, Bootstrap, Spring Boot & MySQL.
+                        </p>
+
+                        <div class="course-rating">
+
+                            ⭐⭐⭐⭐⭐
+
+                            <span>(4.9)</span>
+
+                        </div>
+
+                        <div class="course-footer">
+
+                            <strong>$49</strong>
+
+                           <a th:href="@{/login}" class="hero-btn">
+                             Enroll Now
+                           </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Course 2 -->
+
+            <div class="col-lg-4">
+
+                <div class="course-card reveal">
+
+                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900"
+                         class="img-fluid"
+                         alt="Data Science">
+
+                    <div class="course-content">
+
+                        <span class="course-category">
+                            Data Science
+                        </span>
+
+                        <h4>
+                            Python Data Analysis
+                        </h4>
+
+                        <p>
+                            Learn Python, Pandas, NumPy and data visualization.
+                        </p>
+
+                        <div class="course-rating">
+
+                            ⭐⭐⭐⭐⭐
+
+                            <span>(4.8)</span>
+
+                        </div>
+
+                        <div class="course-footer">
+
+                            <strong>$59</strong>
+
+                            <a th:href="@{/login}" class="hero-btn">
+                              Enroll Now
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Course 3 -->
+
+            <div class="col-lg-4">
+
+                <div class="course-card reveal">
+
+                    <img src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?w=900"
+                         class="img-fluid"
+                         alt="UI UX">
+
+                    <div class="course-content">
+
+                        <span class="course-category">
+                            UI / UX Design
+                        </span>
+
+                        <h4>
+                            UI/UX Design Masterclass
+                        </h4>
+
+                        <p>
+                            Design modern websites and mobile applications.
+                        </p>
+
+                        <div class="course-rating">
+
+                            ⭐⭐⭐⭐⭐
+
+                            <span>(5.0)</span>
+
+                        </div>
+
+                        <div class="course-footer">
+
+                            <strong>$69</strong>
+
+                            <a th:href="@{/login}" class="hero-btn">
+                             Enroll Now
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+    <div class="col-lg-4">
+
+    <div class="course-card reveal">
+
+        <img src="https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=900"
+             class="img-fluid"
+             alt="Mobile Development">
+
+        <div class="course-content">
+
+            <span class="course-category">Mobile Development</span>
+
+            <h4>Flutter App Development</h4>
+
+            <p>Create Android and iOS applications using Flutter and Dart.</p>
+
+            <div class="course-rating">
+                ⭐⭐⭐⭐⭐ <span>(4.9)</span>
+            </div>
+
+            <div class="course-footer">
+
+                <strong>$55</strong>
+
+                <a th:href="@{/login}" class="hero-btn">
+                      Enroll Now
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="col-lg-4">
+
+    <div class="course-card reveal">
+
+        <img src="https://images.unsplash.com/photo-1510511459019-5dda7724fd87?w=900"
+             class="img-fluid"
+             alt="Cyber Security">
+
+        <div class="course-content">
+
+            <span class="course-category">Cyber Security</span>
+
+            <h4>Ethical Hacking & Security</h4>
+
+            <p>Protect systems, networks and applications from cyber threats.</p>
+
+            <div class="course-rating">
+                ⭐⭐⭐⭐⭐ <span>(5.0)</span>
+            </div>
+
+            <div class="course-footer">
+
+                <strong>$79</strong>
+
+               <a th:href="@{/login}" class="hero-btn">
+                 Enroll Now
+               </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="col-lg-4">
+
+    <div class="course-card reveal">
+
+        <img src="https://images.unsplash.com/photo-1677442136019-21780ecad995?w=900"
+             class="img-fluid"
+             alt="Artificial Intelligence">
+
+        <div class="course-content">
+
+            <span class="course-category">Artificial Intelligence</span>
+
+            <h4>Machine Learning with Python</h4>
+
+            <p>Learn AI, Machine Learning and Deep Learning from scratch.</p>
+
+            <div class="course-rating">
+                ⭐⭐⭐⭐⭐ <span>(4.9)</span>
+            </div>
+
+            <div class="course-footer">
+
+                <strong>$89</strong>
+
+                <a th:href="@{/login}" class="hero-btn">
+                  Enroll Now
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="col-lg-4">
+
+    <div class="course-card reveal">
+
+        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=900"
+             class="img-fluid"
+             alt="Graphic Design">
+
+        <div class="course-content">
+
+            <span class="course-category">Graphic Design</span>
+
+            <h4>Adobe Photoshop & Illustrator</h4>
+
+            <p>Create stunning graphics, branding and social media content.</p>
+
+            <div class="course-rating">
+                ⭐⭐⭐⭐⭐ <span>(4.8)</span>
+            </div>
+
+            <div class="course-footer">
+
+                <strong>$45</strong>
+
+                <a th:href="@{/login}" class="hero-btn">
+                  Enroll Now
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="col-lg-4">
+
+    <div class="course-card reveal">
+
+        <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=900"
+             class="img-fluid"
+             alt="Cloud Computing">
+
+        <div class="course-content">
+
+            <span class="course-category">Cloud Computing</span>
+
+            <h4>AWS Cloud Practitioner</h4>
+
+            <p>Master cloud infrastructure, deployment and AWS services.</p>
+
+            <div class="course-rating">
+                ⭐⭐⭐⭐⭐ <span>(4.9)</span>
+            </div>
+
+            <div class="course-footer">
+
+                <strong>$99</strong>
+
+                <a th:href="@{/login}" class="hero-btn">
+                 Enroll Now
+                 </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="col-lg-4">
+
+    <div class="course-card reveal">
+
+        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900"
+             class="img-fluid"
+             alt="Digital Marketing">
+
+        <div class="course-content">
+
+            <span class="course-category">Digital Marketing</span>
+
+            <h4>SEO & Social Media Marketing</h4>
+
+            <p>Grow businesses using Google Ads, Facebook and Instagram marketing.</p>
+
+            <div class="course-rating">
+                ⭐⭐⭐⭐⭐ <span>(4.9)</span>
+            </div>
+
+            <div class="course-footer">
+
+                <strong>$49</strong>
+
+                <a th:href="@{/login}" class="hero-btn">
+                 Enroll Now
+                 </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+</div>
+</div>
+
+</section>
+
+<!-- ================= TRUSTED BY ================= -->
+
+<section class="trusted py-5">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="fw-bold">
+                Trusted by Leading Companies
+            </h2>
+
+            <p class="text-muted">
+                Our graduates work in some of the world's leading organizations.
+            </p>
+
+        </div>
+
+        <div class="row text-center g-4">
+
+            <div class="col-md-2 col-6">
+                <i class="fab fa-google company-icon"></i>
+                <h6>Google</h6>
+            </div>
+
+            <div class="col-md-2 col-6">
+                <i class="fab fa-microsoft company-icon"></i>
+                <h6>Microsoft</h6>
+            </div>
+
+            <div class="col-md-2 col-6">
+                <i class="fab fa-amazon company-icon"></i>
+                <h6>Amazon</h6>
+            </div>
+
+            <div class="col-md-2 col-6">
+                <i class="fab fa-apple company-icon"></i>
+                <h6>Apple</h6>
+            </div>
+
+            <div class="col-md-2 col-6">
+                <i class="fab fa-meta company-icon"></i>
+                <h6>Meta</h6>
+            </div>
+
+            <div class="col-md-2 col-6">
+                <i class="fab fa-linkedin company-icon"></i>
+                <h6>LinkedIn</h6>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- Why Choose Nova Learning Section -->
+<section class="why-choose-section py-5 reveal">
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h2 class="fw-bold">
+                Why Choose <span class="text-primary">Nova Learning</span>?
+            </h2>
+            <p class="text-muted">
+                We provide everything you need to learn, grow, and achieve your career goals.
+            </p>
+        </div>
+
+
+        <div class="row g-4">
+
+            <!-- Expert Instructors -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card reveal text-center">
+                    <div class="icon-box">
+                        <i class="fas fa-chalkboard-teacher"></i>
+                    </div>
+
+                    <h4>Expert Instructors</h4>
+                    <p>
+                        Learn from experienced professionals who provide practical knowledge.
+                    </p>
+
+                    <h3 class="counter" data-target="50000">14</h3>
+                    <span>Qualified Teachers</span>
+                </div>
+            </div>
+
+
+            <!-- Certificates -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card reveal text-center">
+
+                    <div class="icon-box">
+                        <i class="fas fa-certificate"></i>
+                    </div>
+
+                    <h4>Certificates</h4>
+                    <p>
+                        Receive recognized certificates after completing your courses.
+                    </p>
+
+                    <h3 class="counter" data-target="50000">18</h3>
+                    <span>Certificates Issued</span>
+
+                </div>
+            </div>
+
+
+            <!-- Learn Anywhere -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card reveal text-center">
+
+                    <div class="icon-box">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+
+                    <h4>Learn Anywhere</h4>
+
+                    <p>
+                        Access your courses anytime from your phone, tablet, or computer.
+                    </p>
+
+                    <h3 class="counter" data-target="50000">8</h3>
+                    <span>Learning Access</span>
+
+                </div>
+            </div>
+
+
+            <!-- HD Video Lessons -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card reveal text-center">
+
+                    <div class="icon-box">
+                        <i class="fas fa-video"></i>
+                    </div>
+
+                    <h4>HD Video Lessons</h4>
+
+                    <p>
+                        Enjoy high-quality lessons designed for easy understanding.
+                    </p>
+
+                    <h5 class="counter" data-target="150">
+150+
+</h5>
+                    <span>Video Lessons</span>
+
+                </div>
+            </div>
+
+
+            <!-- Live Support -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card reveal text-center">
+
+                    <div class="icon-box">
+                        <i class="fas fa-comments"></i>
+                    </div>
+
+                    <h4>Live Support</h4>
+
+                    <p>
+                        Get help from our support team whenever you need assistance.
+                    </p>
+
+                    <h5 class="counter" data-target="150">
+150+
+</h5>
+                    <span>Student Satisfaction</span>
+
+                </div>
+            </div>
+
+
+            <!-- Career Growth -->
+            <div class="col-md-6 col-lg-4">
+                <div class="feature-card reveal text-center">
+
+                    <div class="icon-box">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+
+                    <h4>Career Growth</h4>
+
+                    <p>
+                        Gain skills that help you advance your professional career.
+                    </p>
+
+                    <h5 class="counter" data-target="150">
+150+
+</h5>
+                    <span>Career Success Rate</span>
+
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+   
+</section>
+
+<!-- Popular Courses Section -->
+<section class="popular-courses py-5 reveal">
+
+    <div class="container">
+
+        <div class="text-center mb-5">
+
+            <h2 class="fw-bold">
+                Popular <span class="text-primary">Courses</span>
+            </h2>
+
+            <p class="text-muted">
+                Explore our most popular courses and start building valuable skills today.
+            </p>
+
+        </div>
+
+
+        <div class="row g-4">
+
+
+            <!-- Course 1 -->
+            <div class="col-lg-4 col-md-6">
+
+                <div class="course-card reveal">
+
+                    <div class="course-image">
+
+                        <img src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=800&q=80" 
+alt="Web Development">
+                        <span class="badge">
+                            Development
+                        </span>
+
+                    </div>
+
+
+                    <div class="course-content">
+
+                        <h4>
+                            Full Stack Web Development
+                        </h4>
+
+
+                        <p class="instructor">
+                            By John Anderson
+                        </p>
+
+
+                        <div class="rating">
+
+                            ⭐⭐⭐⭐⭐
+                            <span>(4.9)</span>
+
+                        </div>
+
+
+                        <div class="course-info">
+
+                            <span>
+                                <i class="fas fa-clock"></i>
+                                12 Weeks
+                            </span>
+
+
+                            <span>
+                                <i class="fas fa-users"></i>
+                                2.5K Students
+                            </span>
+
+                        </div>
+
+
+                        <div class="course-footer">
+
+                            <h5>
+                                Free
+                            </h5>
+
+                            <a th:href="@{/login}" class="hero-btn">
+                              Enroll Now
+                            </a>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+
+            <!-- Course 2 -->
+            <div class="col-lg-4 col-md-6">
+
+                <div class="course-card reveal">
+
+
+                    <div class="course-image">
+
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80" 
+     alt="Data Science">
+                        <span class="badge">
+                            Data Science
+                        </span>
+
+                    </div>
+
+
+                    <div class="course-content">
+
+                        <h4>
+                            Data Science & AI
+                        </h4>
+
+
+                        <p class="instructor">
+                            By Sarah Williams
+                        </p>
+
+
+                        <div class="rating">
+
+                            ⭐⭐⭐⭐⭐
+                            <span>(4.8)</span>
+
+                        </div>
+
+
+                        <div class="course-info">
+
+                            <span>
+                                <i class="fas fa-clock"></i>
+                                10 Weeks
+                            </span>
+
+                            <span>
+                                <i class="fas fa-users"></i>
+                                1.8K Students
+                            </span>
+
+                        </div>
+
+
+                        <div class="course-footer">
+
+                            <h5>
+                                $49
+                            </h5>
+
+                         <a th:href="@{/login}" class="hero-btn">
+                          Enroll Now
+                         </a>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+
+            <!-- Course 3 -->
+            <div class="col-lg-4 col-md-6">
+
+                <div class="course-card reveal">
+
+
+                    <div class="course-image">
+
+                        <img src="https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80" 
+alt="Cyber Security">
+
+                        <span class="badge">
+                            Security
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="course-content">
+
+
+                        <h4>
+                            Cyber Security Masterclass
+                        </h4>
+
+
+                        <p class="instructor">
+                            By Michael Brown
+                        </p>
+
+
+
+                        <div class="rating">
+
+                            ⭐⭐⭐⭐⭐
+                            <span>(5.0)</span>
+
+                        </div>
+
+
+
+                        <div class="course-info">
+
+                            <span>
+                                <i class="fas fa-clock"></i>
+                                8 Weeks
+                            </span>
+
+
+                            <span>
+                                <i class="fas fa-users"></i>
+                                3K Students
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="course-footer">
+
+                            <h5>
+                                $59
+                            </h5>
+
+                           <a th:href="@{/login}" class="hero-btn">
+                            Enroll Now
+                            </a>
+
+                        </div>
+
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+
+        <div class="text-center mt-5">
+
+            <a href="#" class="view-btn">
+                View All Courses
+            </a>
+
+        </div>
+
+
+    </div>
+
+</section>
+
+<!-- Testimonials Section -->
+
+<section class="testimonials py-5 reveal">
+
+    <div class="container">
+
+
+        <div class="text-center mb-5">
+
+            <h2 class="fw-bold">
+                What Our <span class="text-primary">Students Say</span>
+            </h2>
+
+            <p class="text-muted">
+                Thousands of learners are improving their skills with Nova Learning.
+            </p>
+
+        </div>
+
+
+
+        <div class="row g-4">
+
+
+            <!-- Review 1 -->
+
+            <div class="col-lg-4 col-md-6">
+
+                <div class="testimonial-card reveal">
+
+
+                    <div class="student-profile">
+
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg"
+                        alt="Student">
+
+                        <div>
+                            <h5>David Johnson</h5>
+                            <span>Web Developer</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="stars">
+                        ⭐⭐⭐⭐⭐
+                    </div>
+
+
+                    <p>
+                        "Nova Learning helped me become a professional web developer.
+                        The courses are easy to understand and very practical."
+                    </p>
+
+
+                </div>
+
+            </div>
+
+
+
+
+
+            <!-- Review 2 -->
+
+            <div class="col-lg-4 col-md-6">
+
+                <div class="testimonial-card reveal">
+
+
+                    <div class="student-profile">
+
+                        <img src="https://randomuser.me/api/portraits/women/44.jpg"
+                        alt="Student">
+
+
+                        <div>
+                            <h5>Sarah Williams</h5>
+                            <span>Data Analyst</span>
+                        </div>
+
+                    </div>
+
+
+                    <div class="stars">
+                        ⭐⭐⭐⭐⭐
+                    </div>
+
+
+                    <p>
+                        "The instructors explain complex topics clearly.
+                        I gained the confidence to apply for better jobs."
+                    </p>
+
+
+                </div>
+
+            </div>
+
+
+
+
+
+            <!-- Review 3 -->
+
+            <div class="col-lg-4 col-md-6">
+
+                <div class="testimonial-card reveal">
+
+
+                    <div class="student-profile">
+
+
+                        <img src="https://randomuser.me/api/portraits/men/75.jpg"
+                        alt="Student">
+
+
+                        <div>
+
+                            <h5>Michael Lee</h5>
+
+                            <span>Cyber Security Student</span>
+
+                        </div>
+
+
+                    </div>
+
+
+
+                    <div class="stars">
+                        ⭐⭐⭐⭐⭐
+                    </div>
+
+
+
+                    <p>
+                        "The hands-on projects made learning enjoyable.
+                        I recommend Nova Learning to everyone."
+                    </p>
+
+
+
+                </div>
+
+            </div>
+
+
+
+        </div>
+
+
+
+    </div>
+
+
+</section>
+
+<!-- CTA Section -->
+
+<section class="cta-section py-5 reveal">
+
+    <div class="container">
+
+        <div class="cta-box">
+
+
+            <div class="row align-items-center">
+
+
+                <div class="col-lg-7">
+
+
+                    <h2>
+                        Ready to Start Your Learning Journey?
+                    </h2>
+
+
+                    <p>
+                        Join thousands of students learning new skills,
+                        earning certificates, and building successful careers
+                        with Nova Learning.
+                    </p>
+
+
+
+                    <div class="cta-buttons">
+
+
+                        <a href="#" class="btn-primary-custom">
+                            Start Learning
+                        </a>
+
+
+                        <a href="#" class="btn-outline-custom">
+                            Become an Instructor
+                        </a>
+
+
+                    </div>
+
+
+
+                </div>
+
+
+
+
+                <div class="col-lg-5">
+
+
+                    <div class="cta-stats">
+
+
+                        <div class="stat-item">
+
+                            <h3 data-target="50000">50K+</h3>
+
+                            <p>Students</p>
+
+                        </div>
+
+
+
+                        <div class="stat-item">
+
+                            <h3 data-target="50000">50K+</h3>
+
+                            <p>Courses</p>
+
+                        </div>
+
+
+
+                        <div class="stat-item">
+
+                            <h3 data-target="50000">50K+</h3>
+
+                            <p>Instructors</p>
+
+                        </div>
+
+
+
+                        <div class="stat-item">
+
+                            <h3>98%</h3>
+
+                            <p>Satisfaction</p>
+
+                        </div>
+
+
+
+                    </div>
+
+
+                </div>
+
+
+
+            </div>
+
+
+        </div>
+
+
+    </div>
+
+
+</section>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Custom JavaScript -->
+    <script src="/assets/js/script.js"></script>
+
+    <!-- Footer -->
+
+<footer class="footer-section">
+
+
+    <div class="container">
+
+
+        <div class="row g-4">
+
+
+            <!-- Brand -->
+
+            <div class="col-lg-4 col-md-6">
+
+                <h3 class="footer-logo">
+                    Nova Learning
+                </h3>
+
+
+                <p>
+                    Empowering students worldwide with practical skills,
+                    professional courses, and career-focused education.
+                </p>
+
+
+
+                <div class="social-icons">
+
+                    <a href="#">
+                        <i class="fab fa-facebook-f"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+            <!-- Quick Links -->
+
+
+            <div class="col-lg-2 col-md-6">
+
+
+                <h5>
+                    Quick Links
+                </h5>
+
+
+                <ul>
+
+                    <li>
+                        <a href="#">
+                            Home
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="#">
+                            Courses
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="#">
+                            About
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="#">
+                            Contact
+                        </a>
+                    </li>
+
+
+                </ul>
+
+
+            </div>
+
+
+
+
+
+
+
+            <!-- Courses -->
+
+
+            <div class="col-lg-3 col-md-6">
+
+
+                <h5>
+                    Popular Courses
+                </h5>
+
+
+                <ul>
+
+
+                    <li>
+                        <a href="#">
+                            Web Development
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="#">
+                            Data Science
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="#">
+                            Cyber Security
+                        </a>
+                    </li>
+
+
+                    <li>
+                        <a href="#">
+                            Digital Marketing
+                        </a>
+                    </li>
+
+
+                </ul>
+
+
+            </div>
+
+
+
+
+
+
+
+            <!-- Newsletter -->
+
+
+            <div class="col-lg-3 col-md-6">
+
+
+                <h5>
+                    Subscribe
+                </h5>
+
+
+                <p>
+                    Get updates about new courses and offers.
+                </p>
+
+
+                <div class="newsletter">
+
+
+                    <input type="email"
+                    placeholder="Your email">
+
+
+                    <button>
+                        Subscribe
+                    </button>
+
+
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+
+
+
+
+        <hr>
+
+
+
+        <div class="copyright">
+
+            © 2026 Nova Learning. All Rights Reserved.
+
+        </div>
+
+
+
+    </div>
+
+
+</footer>
+</body>
+</html>

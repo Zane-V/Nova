@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Live Session - NovaLearn</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .create-session-page { min-height: 100vh; background: var(--bg-color); padding: 2rem 1rem; }
+        .session-form-card {
+            max-width: 560px; margin: 0 auto;
+            background: var(--card-bg); border-radius: 24px;
+            padding: 2.5rem; border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        }
+        .session-form-card h1 { font-size: 1.6rem; font-weight: 700; margin-bottom: 0.25rem; }
+        .session-form-card p { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; margin-bottom: 1.5rem; transition: color 0.2s; }
+        .back-link:hover { color: var(--primary-color); }
+    </style>
+    <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body class="create-session-page">
+
+    <div style="max-width:560px; margin:0 auto;">
+        <a th:href="@{/dashboard}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="session-form-card">
+        <h1><i class="fas fa-video" style="color:var(--primary-color);margin-right:0.5rem;"></i>Host a Live Session</h1>
+        <p>Fill in the details below. A unique room code will be generated and your students can join instantly.</p>
+
+        <!-- Error Banner -->
+<div th:if="${errorMessage}" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#dc2626;padding:0.85rem 1rem;border-radius:12px;margin-bottom:1.5rem;font-size:0.9rem;display:flex;align-items:center;gap:0.6rem;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span th:text="${errorMessage}"></span>
+            </div>
+
+            <!-- Field Errors -->
+            <div th:if="${fieldErrors}" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#dc2626;padding:0.85rem 1rem;border-radius:12px;margin-bottom:1.5rem;font-size:0.9rem;">
+                <ul style="margin:0; padding-left:1.2rem;">
+                    <li th:each="err : ${fieldErrors}" th:text="${err.key} + ': ' + ${err.value}"></li>
+                </ul>
+            </div>
+
+        <form th:object="${createSessionForm}" th:action="@{/create-session}" method="POST" class="auth-form">
+            <div class="form-group">
+                <label for="title">Session Title</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-heading"></i>
+                    <input type="text" id="title" name="title" class="auth-input"
+                       th:field="*{title}"
+                       placeholder="e.g. Introduction to Machine Learning" required maxlength="120">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="subject">Subject / Course</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-book"></i>
+                    <input type="text" id="subject" name="subject" class="auth-input"
+                       th:field="*{subject}"
+                       placeholder="e.g. Computer Science 301" required maxlength="80">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="scheduledAt">Scheduled Date &amp; Time <span style="color:var(--text-muted);font-size:0.8rem;">(optional — defaults to now)</span></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-calendar-alt"></i>
+                    <input type="datetime-local" id="scheduledAt" name="scheduledAt" style="padding-left:2.5rem;">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" style="margin-top:0.5rem;">
+                <i class="fas fa-play-circle" style="margin-right:0.5rem;"></i> Start Session Now
+            </button>
+        </form>
+    </div>
+
+</body>
+</html>

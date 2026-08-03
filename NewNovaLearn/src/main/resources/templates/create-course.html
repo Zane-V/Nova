@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create New Course - NovaLearn</title>
+    <meta name="description" content="Create a new course on NovaLearn">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/create-course.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .text-area-panel { display: none; }
+        .text-area-panel.visible { display: block; }
+        .upload-panel { display: block; }
+        .upload-panel.hidden { display: none; }
+
+        .hidden-file-input { display: none; }
+        .file-chosen-label {
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        .file-chosen-label span { font-weight: 600; color: #4371fa; }
+
+        .error-banner {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.3);
+            color: #dc2626;
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Live preview updates */
+        #previewTitle { transition: color 0.2s; }
+        .preview-level-badge {
+            font-size: 0.7rem; font-weight: 600;
+            padding: 0.3rem 0.6rem; border-radius: 20px;
+            background: #e6f6f1; color: #0ebc7f;
+        }
+        .preview-category-badge {
+            font-size: 0.7rem; font-weight: 600;
+            padding: 0.3rem 0.6rem; border-radius: 20px;
+            background: #eef3ff; color: #4371fa;
+        }
+    </style>
+    <link rel="stylesheet" href="/css/animations.css">
+</head>
+<body class="create-course-page">
+
+    <!-- Top Navbar -->
+    <nav class="navbar navbar-expand-lg fixed-top" id="mainNavbar">
+        <div class="container">
+            <a class="navbar-brand" th:href="@{/}">
+                <span class="logo-icon"><i class="fas fa-graduation-cap"></i></span>
+                Nova Learning
+            </a>
+            <div class="d-flex gap-3 align-items-center">
+                <a th:href="@{/dashboard}" class="nav-link">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+                <button type="submit" form="createCourseForm" class="hero-btn">
+                    <i class="fas fa-paper-plane me-1"></i> Publish Course
+                </button>
+            </div>
+        </div>
+    </nav>
+    <div style="height:90px;"></div>
+
+    <main class="cc-container">
+
+        <!-- Header Section -->
+        <header class="cc-header">
+            <h1>Create New Course</h1>
+            <p>Design a high-quality learning experience for your students.</p>
+        </header>
+
+        <!-- Error message -->
+        <div th:if="${errorMessage}" class="error-banner">
+            <i class="fas fa-exclamation-circle"></i>
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <!-- Field Errors -->
+        <div th:if="${fieldErrors}" class="error-banner">
+            <i class="fas fa-exclamation-circle"></i>
+            <ul style="margin:0; padding-left:1.2rem;">
+                <li th:each="err : ${fieldErrors}" th:text="${err.key} + ': ' + ${err.value}"></li>
+            </ul>
+        </div>
+
+        <!-- Main Layout Grid -->
+        <div class="cc-grid">
+
+            <!-- Left Column: Form -->
+            <div class="cc-main-col">
+
+                <form id="createCourseForm"
+                      th:object="${createCourseForm}"
+                      th:action="@{/create-course}"
+                      method="POST"
+                      enctype="multipart/form-data">
+
+                    <!-- Hidden fields -->
+                     <input type="hidden" th:field="*{contentType}" id="contentTypeInput" value="VIDEO">
+
+                    <!-- Basic Details -->
+                    <div class="cc-card">
+                        <div class="cc-card-header">
+                            <i class="far fa-info-circle blue-text"></i>
+                            <h2>Basic Details</h2>
+                        </div>
+
+                        <div class="cc-form-group">
+                            <label for="courseTitle">Course Title *</label>
+                            <input type="text" id="courseTitle" name="title" class="cc-input"
+                                    th:field="*{title}"
+                                    placeholder="e.g. Introduction to Machine Learning"
+                                    required
+                                    oninput="updatePreview()">
+                        </div>
+
+                        <div class="cc-form-group">
+                            <label for="courseCategory">Category *</label>
+                            <div class="cc-select-wrapper">
+<select id="courseCategory" name="category" class="cc-input"
+                                    th:field="*{category}"
+                                    required onchange="updatePreview()">
+                                    <option value="" disabled selected>Select a category</option>
+                                    <option value="Computer Science">Computer Science</option>
+                                    <option value="Mathematics">Mathematics</option>
+                                    <option value="Physics">Physics</option>
+                                    <option value="Engineering">Engineering</option>
+                                    <option value="Business">Business</option>
+                                    <option value="Economics">Economics</option>
+                                    <option value="Design">Design</option>
+                                    <option value="Medicine">Medicine</option>
+                                    <option value="Law">Law</option>
+                                    <option value="Literature">Literature</option>
+                                    <option value="Personal Development">Personal Development</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+
+                        <div class="cc-form-group">
+                            <label for="courseLevel">Level *</label>
+                            <div class="cc-select-wrapper">
+<select id="courseLevel" name="level" class="cc-input"
+                                    th:field="*{level}"
+                                    required onchange="updatePreview()">
+                                    <option value="" disabled selected>Select a level</option>
+                                    <option value="Beginner">Beginner</option>
+                                    <option value="Intermediate">Intermediate</option>
+                                    <option value="Advanced">Advanced</option>
+                                </select>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+
+                        <div class="cc-form-group">
+                            <label for="courseDescription">Course Description *</label>
+                            <textarea id="courseDescription" name="description"
+                                   th:field="*{description}"
+                                      class="cc-input cc-textarea" rows="4"
+                                      placeholder="Briefly describe what students will learn..."
+                                      required></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Primary Content -->
+                    <div class="cc-card">
+                        <div class="cc-card-header space-between">
+                            <div class="header-left">
+                                <i class="far fa-play-circle blue-text"></i>
+                                <h2>Course Content</h2>
+                            </div>
+                            <div class="toggle-switch">
+                                <button type="button" class="toggle-btn active" id="btnVideo" onclick="switchContent('VIDEO')">
+                                    <i class="fas fa-video"></i> Video
+                                </button>
+                                <button type="button" class="toggle-btn" id="btnText" onclick="switchContent('TEXT')">
+                                    <i class="fas fa-align-left"></i> Text
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Video upload panel -->
+                        <div class="upload-panel" id="videoPanel">
+                            <div class="upload-area" id="dropZone"
+                                 ondragover="handleDragOver(event)"
+                                 ondragleave="handleDragLeave(event)"
+                                 ondrop="handleDrop(event)">
+                                <div class="upload-icon-container">
+                                    <i class="fas fa-file-video"></i>
+                                </div>
+                                <h3>Drag & drop your video here</h3>
+                                <p>MP4, MOV, or AVI up to 1 GB</p>
+                                <button type="button" class="btn btn-primary select-file-btn"
+                                        onclick="document.getElementById('videoFile').click()">
+                                    Select Video File
+                                </button>
+                                <input type="file" id="videoFile" name="videoFile" class="hidden-file-input"
+                                       accept="video/*" onchange="fileChosen(this)">
+                                <div class="file-chosen-label" id="fileChosenLabel">No file selected</div>
+                            </div>
+                        </div>
+
+                        <!-- Text content panel -->
+                        <div class="text-area-panel" id="textPanel">
+                            <div class="cc-form-group" style="margin-bottom:0;">
+                                <label for="textContent">Course Text Content *</label>
+                                <textarea id="textContent" name="textContent"
+                                    th:field="*{textContent}"
+                                    class="cc-input cc-textarea" rows="10"
+                                    placeholder="Write your course content here. You can include explanations, theory, examples, links, etc."></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Submit at bottom for mobile -->
+                    <button type="submit" class="btn btn-primary btn-block"
+                            style="padding:0.9rem;font-size:1rem;font-weight:600;border-radius:10px;margin-top:0.5rem;">
+                        <i class="fas fa-paper-plane"></i> Publish Course
+                    </button>
+
+                </form>
+            </div>
+
+            <!-- Right Column: Live Preview -->
+            <div class="cc-sidebar">
+                <div class="cc-card sticky-preview">
+                    <h2 class="preview-title">Live Preview</h2>
+
+                    <div class="preview-video" id="previewVideoThumb"
+                         style="background:linear-gradient(135deg,#5c4dff22,#3b28cc22);display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-photo-video" style="font-size:2.5rem;color:#7f56da;opacity:0.5;"></i>
+                    </div>
+
+                    <h3 class="preview-course-title" id="previewTitle"
+                        style="color:#a0a5b1;">Your course title will appear here...</h3>
+
+                    <div class="preview-tags" id="previewTags">
+                        <span class="preview-level-badge" id="previewLevel" style="display:none;"></span>
+                        <span class="preview-category-badge" id="previewCategory" style="display:none;"></span>
+                    </div>
+
+                    <div class="preview-meta-list">
+                        <div class="preview-meta-item">
+                            <span class="meta-label">Format</span>
+                            <span class="meta-value" id="previewFormat">Video</span>
+                        </div>
+                        <div class="preview-meta-item">
+                            <span class="meta-label">Level</span>
+                            <span class="meta-value" id="previewLevelMeta">—</span>
+                        </div>
+                    </div>
+
+                    <p style="font-size:0.8rem;color:#a0a5b1;margin-top:0.5rem;line-height:1.5;"
+                       id="previewDesc">Fill in the details on the left to preview your course.</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function switchContent(type) {
+            document.getElementById('contentTypeInput').value = type;
+            const videoPanel = document.getElementById('videoPanel');
+            const textPanel = document.getElementById('textPanel');
+            const btnVideo = document.getElementById('btnVideo');
+            const btnText = document.getElementById('btnText');
+            const previewFormat = document.getElementById('previewFormat');
+
+            if (type === 'VIDEO') {
+                videoPanel.classList.remove('hidden');
+                textPanel.classList.remove('visible');
+                btnVideo.classList.add('active');
+                btnText.classList.remove('active');
+                previewFormat.textContent = 'Video';
+            } else {
+                videoPanel.classList.add('hidden');
+                textPanel.classList.add('visible');
+                btnVideo.classList.remove('active');
+                btnText.classList.add('active');
+                previewFormat.textContent = 'Text';
+            }
+        }
+
+        function fileChosen(input) {
+            const label = document.getElementById('fileChosenLabel');
+            if (input.files && input.files.length > 0) {
+                const f = input.files[0];
+                const mb = (f.size / (1024 * 1024)).toFixed(1);
+                label.innerHTML = 'Selected: <span>' + f.name + ' (' + mb + ' MB)</span>';
+            } else {
+                label.innerHTML = 'No file selected';
+            }
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            document.getElementById('dropZone').style.borderColor = '#4371fa';
+            document.getElementById('dropZone').style.background = '#f0f4ff';
+        }
+        function handleDragLeave(e) {
+            document.getElementById('dropZone').style.borderColor = '';
+            document.getElementById('dropZone').style.background = '';
+        }
+        function handleDrop(e) {
+            e.preventDefault();
+            handleDragLeave(e);
+            const input = document.getElementById('videoFile');
+            if (e.dataTransfer.files.length > 0) {
+                const dt = new DataTransfer();
+                dt.items.add(e.dataTransfer.files[0]);
+                input.files = dt.files;
+                fileChosen(input);
+            }
+        }
+
+        function updatePreview() {
+            const title = document.getElementById('courseTitle').value;
+            const category = document.getElementById('courseCategory').value;
+            const level = document.getElementById('courseLevel').value;
+            const desc = document.getElementById('courseDescription').value;
+
+            const previewTitle = document.getElementById('previewTitle');
+            previewTitle.textContent = title || 'Your course title will appear here...';
+            previewTitle.style.color = title ? '#1a1a24' : '#a0a5b1';
+
+            const previewLevel = document.getElementById('previewLevel');
+            const previewCategory = document.getElementById('previewCategory');
+            const previewLevelMeta = document.getElementById('previewLevelMeta');
+
+            if (level) {
+                previewLevel.textContent = level;
+                previewLevel.style.display = 'inline-block';
+                previewLevelMeta.textContent = level;
+            } else {
+                previewLevel.style.display = 'none';
+                previewLevelMeta.textContent = '—';
+            }
+            if (category) {
+                previewCategory.textContent = category;
+                previewCategory.style.display = 'inline-block';
+            } else {
+                previewCategory.style.display = 'none';
+            }
+
+            const previewDesc = document.getElementById('previewDesc');
+            previewDesc.textContent = desc || 'Fill in the details on the left to preview your course.';
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

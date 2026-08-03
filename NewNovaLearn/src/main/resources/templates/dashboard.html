@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | Nova Learning</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<main class="dashboard-content dashboard-shell" style="padding-top: 110px;">
+    <div class="container">
+
+        <!-- Welcome banner -->
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
+            <div>
+                <h3 class="mb-1" th:text="'Welcome back, ' + (${nickname} ?: 'there') + '!'">Welcome back!</h3>
+                <p class="text-muted mb-0" th:if="${role == 'student'}">Here's your learning overview. Keep pushing &mdash; every module brings you closer to your goals.</p>
+                <p class="text-muted mb-0" th:if="${role == 'lecturer'}">Here's your teaching overview. Your students are counting on you.</p>
+            </div>
+            <a th:if="${role == 'lecturer'}" th:href="@{/create-course}" class="hero-btn">
+                <i class="fas fa-plus me-1"></i>Create Course
+            </a>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success" role="alert">
+            <i class="fas fa-check-circle me-1"></i><span th:text="${successMessage}"></span>
+        </div>
+
+        <!-- Stats -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-3 col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-icon blue"><i class="fas fa-book"></i></div>
+                    <h3 th:text="${role == 'student'} ? (${enrolledCount} ?: 0) : (${myCourses != null} ? ${#lists.size(myCourses)} : 0)">0</h3>
+                    <p th:text="${role == 'student'} ? 'Courses Enrolled' : 'Courses Created'">Courses</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-icon purple"><i class="fas fa-certificate"></i></div>
+                    <h3>0</h3>
+                    <p>Certificates Earned</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-icon green"><i class="fas fa-user"></i></div>
+                    <h3 style="font-size:1.1rem;" th:text="${fullName ?: 'Not set'}">Name</h3>
+                    <p>Full Name</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="dashboard-card">
+                    <div class="card-icon orange"><i class="fas fa-calendar-alt"></i></div>
+                    <h3 style="font-size:1.1rem;" th:text="${joinedAt ?: 'Unknown'}">Joined</h3>
+                    <p>Member Since</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <!-- Main column: course lists -->
+            <div class="col-lg-8">
+
+                <!-- LECTURER: my courses -->
+                <div th:if="${role == 'lecturer'}" class="dashboard-section mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">My Courses</h4>
+                        <a th:href="@{/create-course}" class="text-decoration-none">+ New Course</a>
+                    </div>
+
+                    <div th:if="${myCourses != null and !#lists.isEmpty(myCourses)}">
+                        <a th:each="c : ${myCourses}" th:href="@{/course/{id}(id=${c.id})}"
+                           class="learning-card d-flex align-items-center flex-wrap mb-3 p-3 text-decoration-none">
+                            <i th:class="${c.contentType == 'VIDEO'} ? 'fas fa-video fa-2x text-primary me-3' : 'fas fa-file-alt fa-2x text-primary me-3'"></i>
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1" th:text="${c.title}">Course Title</h5>
+                                <p class="mb-0 text-muted small" th:text="${c.category + ' &middot; ' + c.level}">Category</p>
+                            </div>
+                            <span class="course-badge" th:text="${c.contentType}">VIDEO</span>
+                        </a>
+                    </div>
+                    <div th:if="${myCourses == null or #lists.isEmpty(myCourses)}" class="text-center py-5 dashboard-card">
+                        <i class="fas fa-book-open fa-2x text-muted mb-3"></i>
+                        <p class="text-muted mb-3">You have not created any courses yet.</p>
+                        <a th:href="@{/create-course}" class="hero-btn">Create Your First Course</a>
+                    </div>
+                </div>
+
+                <!-- STUDENT: enrolled + available courses -->
+                <div th:if="${role == 'student'}" class="dashboard-section mb-5">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h4 class="mb-0">Continue Learning</h4>
+                        <a th:href="@{/courses}" class="text-decoration-none">Browse catalog &rarr;</a>
+                    </div>
+
+                    <div th:if="${enrolledCourses != null and !#lists.isEmpty(enrolledCourses)}">
+                        <a th:each="c : ${enrolledCourses}" th:href="@{/course/{id}(id=${c.id})}"
+                           class="learning-card d-flex align-items-center flex-wrap mb-3 p-3 text-decoration-none">
+                            <i th:class="${c.contentType == 'VIDEO'} ? 'fas fa-video fa-2x text-primary me-3' : 'fas fa-file-alt fa-2x text-primary me-3'"></i>
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1" th:text="${c.title}">Course Title</h5>
+                                <p class="mb-0 text-muted small" th:text="${c.category + ' &middot; ' + c.level}">Category</p>
+                            </div>
+                            <span class="course-badge" th:text="${c.contentType}">VIDEO</span>
+                        </a>
+                    </div>
+                    <div th:if="${enrolledCourses == null or #lists.isEmpty(enrolledCourses)}" class="text-center py-5 dashboard-card mb-4">
+                        <i class="fas fa-book-open fa-2x text-muted mb-3"></i>
+                        <p class="text-muted mb-3">You have not enrolled in any courses yet.</p>
+                        <a th:href="@{/courses}" class="hero-btn">Find a Course</a>
+                    </div>
+
+                    <div th:if="${availableCourses != null and !#lists.isEmpty(availableCourses)}" class="mt-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="mb-0">Available to Explore</h5>
+                            <a th:href="@{/courses}" class="text-decoration-none">View catalog &rarr;</a>
+                        </div>
+                        <a th:each="c : ${availableCourses}" th:href="@{/course/{id}(id=${c.id})}"
+                           class="learning-card d-flex align-items-center flex-wrap mb-3 p-3 text-decoration-none">
+                            <i th:class="${c.contentType == 'VIDEO'} ? 'fas fa-video fa-2x text-primary me-3' : 'fas fa-file-alt fa-2x text-primary me-3'"></i>
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1" th:text="${c.title}">Course Title</h5>
+                                <p class="mb-0 text-muted small" th:text="${c.category + ' &middot; ' + c.level}">Category</p>
+                            </div>
+                            <i class="fas fa-arrow-right text-primary"></i>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Sidebar -->
+            <div class="col-lg-4">
+
+                <div class="dashboard-card text-start p-4 mb-4">
+                    <h5 class="mb-3">My Account</h5>
+                    <div class="d-flex align-items-start flex-wrap mb-3">
+                        <div class="card-icon purple me-3" style="width:44px;height:44px;font-size:1.1rem;"><i class="fas fa-user"></i></div>
+                        <div>
+                            <p class="text-muted small mb-0">Full Name</p>
+                            <p class="fw-semibold mb-0" th:text="${fullName ?: 'Not set'}">Not set</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start flex-wrap mb-3">
+                        <div class="card-icon blue me-3" style="width:44px;height:44px;font-size:1.1rem;"><i class="fas fa-at"></i></div>
+                        <div>
+                            <p class="text-muted small mb-0">Nickname</p>
+                            <p class="fw-semibold mb-0" th:text="${nickname ?: 'Not set'}">Not set</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start flex-wrap mb-3">
+                        <div class="card-icon green me-3" style="width:44px;height:44px;font-size:1.1rem;"><i class="far fa-envelope"></i></div>
+                        <div>
+                            <p class="text-muted small mb-0">Email</p>
+                            <p class="fw-semibold mb-0" style="word-break:break-all;" th:text="${email ?: 'Not set'}">Not set</p>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start flex-wrap">
+                        <div class="card-icon orange me-3" style="width:44px;height:44px;font-size:1.1rem;"><i class="fas fa-calendar-alt"></i></div>
+                        <div>
+                            <p class="text-muted small mb-0">Joined</p>
+                            <p class="fw-semibold mb-0" th:text="${joinedAt ?: 'Unknown'}">Unknown</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="upcoming-card p-4">
+                    <th:block th:if="${role == 'lecturer'}">
+                        <i class="fas fa-video fa-2x text-primary mb-2"></i>
+                        <h5>Host a Live Session</h5>
+                        <p class="text-muted small">Start a live interactive study group or broadcast for your students.</p>
+                        <a th:href="@{/create-session}" class="hero-btn d-inline-block mt-2">Create Session</a>
+                    </th:block>
+                    <th:block th:if="${role == 'student'}">
+                        <i class="fas fa-users fa-2x text-primary mb-2"></i>
+                        <h5>Live Study Groups</h5>
+                        <p class="text-muted small">Join active peers or start your own study group.</p>
+                        <a th:href="@{/sessions}" class="hero-btn d-inline-block mt-2">Join Session</a>
+                    </th:block>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/assets/js/script.js"></script>
+</body>
+</html>
