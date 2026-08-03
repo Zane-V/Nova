@@ -7,8 +7,6 @@ import com.novalearn.novalearn.model.User;
 import com.novalearn.novalearn.repository.CoursePostRepository;
 import com.novalearn.novalearn.repository.CourseRepository;
 import com.novalearn.novalearn.repository.EnrollmentRepository;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

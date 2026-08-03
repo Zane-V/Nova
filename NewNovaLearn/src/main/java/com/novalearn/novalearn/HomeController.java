@@ -1,7 +1,6 @@
 package com.novalearn.novalearn;
 
 import com.novalearn.novalearn.dto.CreateCourseForm;
-import com.novalearn.novalearn.dto.CreateSessionForm;
 import com.novalearn.novalearn.dto.ForgotPasswordForm;
 import com.novalearn.novalearn.dto.RegisterForm;
 import com.novalearn.novalearn.dto.ResetPasswordForm;
@@ -18,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -71,6 +69,7 @@ public class HomeController {
     }
 
     // ── Helper: convert BindingResult field errors to a Map ──────────────────
+    @SuppressWarnings("null")
     private Map<String, String> getFieldErrors(BindingResult bindingResult) {
         return bindingResult.getFieldErrors().stream()
                 .collect(Collectors.toMap(

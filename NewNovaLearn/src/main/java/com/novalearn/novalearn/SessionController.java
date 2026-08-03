@@ -7,7 +7,6 @@ import com.novalearn.novalearn.service.SessionService;
 import com.novalearn.novalearn.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,7 +14,6 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,6 +35,7 @@ public class SessionController {
         return userService.findByEmail(principal.getName());
     }
 
+    @SuppressWarnings("null")
     private Map<String, String> getFieldErrors(BindingResult bindingResult) {
         return bindingResult.getFieldErrors().stream()
                 .collect(Collectors.toMap(
