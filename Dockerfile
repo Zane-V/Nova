@@ -1,16 +1,15 @@
 # ── Stage 1: Build ───────────────────────────────────────────────────────────
-# Use the official Maven image — it has Maven + JAVA_HOME pre-configured
+# Maven image has mvn + JAVA_HOME pre-configured — no need for mvnw
 FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 
-# Copy Maven wrapper and pom first (layer cache: only re-download deps if pom changes)
-COPY NewNovaLearn/.mvn/ .mvn/
-COPY NewNovaLearn/mvnw NewNovaLearn/pom.xml ./
-RUN chmod +x mvnw && ./mvnw dependency:resolve -q
+# Copy pom first (layer cache: only re-download deps if pom changes)
+COPY NewNovaLearn/pom.xml ./
+RUN mvn dependency:resolve -q
 
 # Copy source and build the fat JAR
 COPY NewNovaLearn/src ./src
-RUN ./mvnw clean package -DskipTests -q
+RUN mvn clean package -DskipTests -q
 
 # ── Stage 2: Runtime ──────────────────────────────────────────────────────────
 FROM eclipse-temurin:21-jre-jammy
