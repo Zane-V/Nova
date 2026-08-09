@@ -4,195 +4,309 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | Nova Learning</title>
-
+    <meta name="description" content="Your personal learning dashboard on Nova Learning.">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background: #f8fafc; color: #1a1a2e; padding-bottom: 80px; }
+
+        /* Welcome banner */
+        .dash-welcome {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white; border-radius: 20px; padding: 2rem 2.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 1.25rem; margin-bottom: 2rem;
+            box-shadow: 0 8px 32px rgba(37,99,235,0.25);
+            position: relative; overflow: hidden;
+        }
+        .dash-welcome::before {
+            content: ''; position: absolute; width: 250px; height: 250px; border-radius: 50%;
+            background: rgba(255,255,255,0.07); top: -60px; right: -60px;
+        }
+        .dash-welcome h2 { font-size: 1.7rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .dash-welcome p { font-size: 0.95rem; opacity: 0.85; margin: 0; }
+        .dash-welcome-btn {
+            background: rgba(255,255,255,0.2); color: white; border: 1.5px solid rgba(255,255,255,0.4);
+            padding: 0.65rem 1.4rem; border-radius: 10px; font-weight: 700; font-size: 0.9rem;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+            transition: background 0.2s;
+        }
+        .dash-welcome-btn:hover { background: rgba(255,255,255,0.3); color: white; }
+
+        /* Stat cards */
+        .stat-card {
+            background: white; border-radius: 16px; padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            display: flex; align-items: center; gap: 1.2rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.09); }
+        .stat-icon {
+            width: 56px; height: 56px; border-radius: 14px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
+        }
+        .stat-icon.blue { background: #eff6ff; color: #2563eb; }
+        .stat-icon.purple { background: #f5f3ff; color: #7c3aed; }
+        .stat-icon.green { background: #f0fdf4; color: #16a34a; }
+        .stat-icon.orange { background: #fff7ed; color: #ea580c; }
+        .stat-card h3 { font-size: 1.5rem; font-weight: 800; margin-bottom: 0.1rem; line-height: 1; }
+        .stat-card p { font-size: 0.82rem; color: #6b7280; margin: 0; }
+
+        /* Section titles */
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+        .section-header h4 { font-size: 1.1rem; font-weight: 700; margin: 0; }
+        .section-header a { font-size: 0.88rem; color: #2563eb; text-decoration: none; font-weight: 600; }
+        .section-header a:hover { text-decoration: underline; }
+
+        /* Course rows */
+        .course-row {
+            background: white; border-radius: 14px; padding: 1rem 1.25rem;
+            display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem;
+            text-decoration: none; color: inherit;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .course-row:hover { transform: translateX(4px); box-shadow: 0 4px 16px rgba(0,0,0,0.09); color: inherit; }
+        .course-row-icon {
+            width: 46px; height: 46px; border-radius: 12px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+            background: #eff6ff; color: #2563eb;
+        }
+        .course-row-icon.text-type { background: #fff7ed; color: #ea580c; }
+        .course-row h5 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.15rem; }
+        .course-row p { font-size: 0.8rem; color: #9ca3af; margin: 0; }
+        .course-row-badge {
+            margin-left: auto; font-size: 0.7rem; font-weight: 700;
+            padding: 0.25rem 0.65rem; border-radius: 999px; flex-shrink: 0;
+        }
+        .badge-video { background: #f5f3ff; color: #7c3aed; }
+        .badge-text { background: #fff7ed; color: #ea580c; }
+
+        /* Empty state */
+        .empty-box {
+            background: white; border-radius: 16px; padding: 3rem 2rem;
+            text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .empty-box i { font-size: 2.5rem; color: #d1d5db; margin-bottom: 1rem; display: block; }
+        .empty-box p { color: #9ca3af; margin-bottom: 1.25rem; }
+
+        /* Sidebar cards */
+        .sidebar-card { background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.05); margin-bottom: 1.25rem; }
+        .sidebar-card h5 { font-size: 1rem; font-weight: 700; margin-bottom: 1.25rem; }
+        .account-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #f3f4f6; }
+        .account-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .account-icon { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; }
+        .account-row p { margin: 0; font-size: 0.75rem; color: #9ca3af; }
+        .account-row h6 { margin: 0; font-size: 0.9rem; font-weight: 600; word-break: break-all; }
+
+        .cta-card {
+            border-radius: 16px; padding: 1.75rem 1.5rem;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white; text-align: center; box-shadow: 0 8px 24px rgba(37,99,235,0.25);
+        }
+        .cta-card i { font-size: 2.2rem; margin-bottom: 0.75rem; display: block; }
+        .cta-card h5 { font-weight: 800; margin-bottom: 0.5rem; }
+        .cta-card p { font-size: 0.85rem; opacity: 0.85; margin-bottom: 1.25rem; }
+        .cta-card a {
+            display: inline-block; background: rgba(255,255,255,0.2); color: white;
+            border: 1.5px solid rgba(255,255,255,0.4); border-radius: 10px;
+            padding: 0.6rem 1.5rem; font-weight: 700; font-size: 0.9rem;
+            text-decoration: none; transition: background 0.2s;
+        }
+        .cta-card a:hover { background: rgba(255,255,255,0.3); color: white; }
+
+        .alert { border-radius: 12px; font-size: 0.9rem; }
+
+        @media (max-width: 576px) {
+            .dash-welcome { padding: 1.5rem; }
+            .dash-welcome h2 { font-size: 1.3rem; }
+        }
+    </style>
 </head>
 <body>
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
+<div style="height: 90px;"></div>
 
-<main class="dashboard-content dashboard-shell" style="padding-top: 110px;">
-    <div class="container">
+<main style="max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;">
 
-        <!-- Welcome banner -->
-        <div class="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-4">
-            <div>
-                <h3 class="mb-1" th:text="'Welcome back, ' + (${nickname} ?: 'there') + '!'">Welcome back!</h3>
-                <p class="text-muted mb-0" th:if="${role == 'student'}">Here's your learning overview. Keep pushing &mdash; every module brings you closer to your goals.</p>
-                <p class="text-muted mb-0" th:if="${role == 'lecturer'}">Here's your teaching overview. Your students are counting on you.</p>
-            </div>
-            <a th:if="${role == 'lecturer'}" th:href="@{/create-course}" class="hero-btn">
-                <i class="fas fa-plus me-1"></i>Create Course
-            </a>
+    <!-- Success -->
+    <div th:if="${successMessage}" class="alert alert-success mb-4">
+        <i class="fas fa-check-circle me-1"></i><span th:text="${successMessage}"></span>
+    </div>
+
+    <!-- Welcome Banner -->
+    <div class="dash-welcome">
+        <div>
+            <h2 th:text="'Welcome back, ' + (${nickname} ?: 'there') + '! 👋'">Welcome back!</h2>
+            <p th:if="${role == 'student'}">Here's your learning overview. Keep pushing — every module brings you closer.</p>
+            <p th:if="${role == 'lecturer'}">Here's your teaching overview. Your students are counting on you.</p>
         </div>
+        <a th:if="${role == 'lecturer'}" th:href="@{/create-course}" class="dash-welcome-btn">
+            <i class="fas fa-plus"></i> New Course
+        </a>
+        <a th:if="${role == 'student'}" th:href="@{/courses}" class="dash-welcome-btn">
+            <i class="fas fa-search"></i> Browse Courses
+        </a>
+    </div>
 
-        <div th:if="${successMessage}" class="alert alert-success" role="alert">
-            <i class="fas fa-check-circle me-1"></i><span th:text="${successMessage}"></span>
-        </div>
-
-        <!-- Stats -->
-        <div class="row g-4 mb-5">
-            <div class="col-lg-3 col-md-6">
-                <div class="dashboard-card">
-                    <div class="card-icon blue"><i class="fas fa-book"></i></div>
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="fas fa-book"></i></div>
+                <div>
                     <h3 th:text="${role == 'student'} ? (${enrolledCount} ?: 0) : (${myCourses != null} ? ${#lists.size(myCourses)} : 0)">0</h3>
                     <p th:text="${role == 'student'} ? 'Courses Enrolled' : 'Courses Created'">Courses</p>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="dashboard-card">
-                    <div class="card-icon purple"><i class="fas fa-certificate"></i></div>
-                    <h3>0</h3>
-                    <p>Certificates Earned</p>
-                </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="fas fa-certificate"></i></div>
+                <div><h3>0</h3><p>Certificates</p></div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="dashboard-card">
-                    <div class="card-icon green"><i class="fas fa-user"></i></div>
-                    <h3 style="font-size:1.1rem;" th:text="${fullName ?: 'Not set'}">Name</h3>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="fas fa-user"></i></div>
+                <div>
+                    <h3 style="font-size:1rem;" th:text="${fullName ?: 'Not set'}">Name</h3>
                     <p>Full Name</p>
                 </div>
             </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="dashboard-card">
-                    <div class="card-icon orange"><i class="fas fa-calendar-alt"></i></div>
-                    <h3 style="font-size:1.1rem;" th:text="${joinedAt ?: 'Unknown'}">Joined</h3>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon orange"><i class="fas fa-calendar-alt"></i></div>
+                <div>
+                    <h3 style="font-size:1rem;" th:text="${joinedAt ?: 'Unknown'}">Joined</h3>
                     <p>Member Since</p>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="row g-4">
-            <!-- Main column: course lists -->
-            <div class="col-lg-8">
+    <div class="row g-4">
+        <!-- Main column -->
+        <div class="col-lg-8">
 
-                <!-- LECTURER: my courses -->
-                <div th:if="${role == 'lecturer'}" class="dashboard-section mb-5">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="mb-0">My Courses</h4>
-                        <a th:href="@{/create-course}" class="text-decoration-none">+ New Course</a>
-                    </div>
-
-                    <div th:if="${myCourses != null and !#lists.isEmpty(myCourses)}">
-                        <a th:each="c : ${myCourses}" th:href="@{/course/{id}(id=${c.id})}"
-                           class="learning-card d-flex align-items-center flex-wrap mb-3 p-3 text-decoration-none">
-                            <i th:class="${c.contentType == 'VIDEO'} ? 'fas fa-video fa-2x text-primary me-3' : 'fas fa-file-alt fa-2x text-primary me-3'"></i>
-                            <div class="flex-grow-1">
-                                <h5 class="mb-1" th:text="${c.title}">Course Title</h5>
-                                <p class="mb-0 text-muted small" th:text="${c.category + ' &middot; ' + c.level}">Category</p>
-                            </div>
-                            <span class="course-badge" th:text="${c.contentType}">VIDEO</span>
-                        </a>
-                    </div>
-                    <div th:if="${myCourses == null or #lists.isEmpty(myCourses)}" class="text-center py-5 dashboard-card">
-                        <i class="fas fa-book-open fa-2x text-muted mb-3"></i>
-                        <p class="text-muted mb-3">You have not created any courses yet.</p>
-                        <a th:href="@{/create-course}" class="hero-btn">Create Your First Course</a>
-                    </div>
+            <!-- LECTURER: My Courses -->
+            <div th:if="${role == 'lecturer'}" class="mb-4">
+                <div class="section-header">
+                    <h4><i class="fas fa-chalkboard-teacher" style="color:#2563eb;margin-right:0.4rem;"></i>My Courses</h4>
+                    <a th:href="@{/create-course}">+ New Course</a>
                 </div>
-
-                <!-- STUDENT: enrolled + available courses -->
-                <div th:if="${role == 'student'}" class="dashboard-section mb-5">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h4 class="mb-0">Continue Learning</h4>
-                        <a th:href="@{/courses}" class="text-decoration-none">Browse catalog &rarr;</a>
-                    </div>
-
-                    <div th:if="${enrolledCourses != null and !#lists.isEmpty(enrolledCourses)}">
-                        <a th:each="c : ${enrolledCourses}" th:href="@{/course/{id}(id=${c.id})}"
-                           class="learning-card d-flex align-items-center flex-wrap mb-3 p-3 text-decoration-none">
-                            <i th:class="${c.contentType == 'VIDEO'} ? 'fas fa-video fa-2x text-primary me-3' : 'fas fa-file-alt fa-2x text-primary me-3'"></i>
-                            <div class="flex-grow-1">
-                                <h5 class="mb-1" th:text="${c.title}">Course Title</h5>
-                                <p class="mb-0 text-muted small" th:text="${c.category + ' &middot; ' + c.level}">Category</p>
-                            </div>
-                            <span class="course-badge" th:text="${c.contentType}">VIDEO</span>
-                        </a>
-                    </div>
-                    <div th:if="${enrolledCourses == null or #lists.isEmpty(enrolledCourses)}" class="text-center py-5 dashboard-card mb-4">
-                        <i class="fas fa-book-open fa-2x text-muted mb-3"></i>
-                        <p class="text-muted mb-3">You have not enrolled in any courses yet.</p>
-                        <a th:href="@{/courses}" class="hero-btn">Find a Course</a>
-                    </div>
-
-                    <div th:if="${availableCourses != null and !#lists.isEmpty(availableCourses)}" class="mt-4">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h5 class="mb-0">Available to Explore</h5>
-                            <a th:href="@{/courses}" class="text-decoration-none">View catalog &rarr;</a>
+                <div th:if="${myCourses != null and !#lists.isEmpty(myCourses)}">
+                    <a th:each="c : ${myCourses}" th:href="@{/course/{id}(id=${c.id})}" class="course-row">
+                        <div th:class="${c.contentType == 'VIDEO'} ? 'course-row-icon' : 'course-row-icon text-type'">
+                            <i th:class="${c.contentType == 'VIDEO'} ? 'fas fa-video' : 'fas fa-file-alt'"></i>
                         </div>
-                        <a th:each="c : ${availableCourses}" th:href="@{/course/{id}(id=${c.id})}"
-                           class="learning-card d-flex align-items-center flex-wrap mb-3 p-3 text-decoration-none">
-                            <i th:class="${c.contentType == 'VIDEO'} ? 'fas fa-video fa-2x text-primary me-3' : 'fas fa-file-alt fa-2x text-primary me-3'"></i>
-                            <div class="flex-grow-1">
-                                <h5 class="mb-1" th:text="${c.title}">Course Title</h5>
-                                <p class="mb-0 text-muted small" th:text="${c.category + ' &middot; ' + c.level}">Category</p>
-                            </div>
-                            <i class="fas fa-arrow-right text-primary"></i>
-                        </a>
-                    </div>
+                        <div class="flex-grow-1 overflow-hidden">
+                            <h5 class="text-truncate" th:text="${c.title}">Title</h5>
+                            <p th:text="${c.category + ' · ' + c.level}">Meta</p>
+                        </div>
+                        <span th:class="${c.contentType == 'VIDEO'} ? 'course-row-badge badge-video' : 'course-row-badge badge-text'" th:text="${c.contentType}">TYPE</span>
+                        <i class="fas fa-chevron-right" style="color:#d1d5db; font-size:0.8rem; flex-shrink:0;"></i>
+                    </a>
                 </div>
-
+                <div th:if="${myCourses == null or #lists.isEmpty(myCourses)}" class="empty-box">
+                    <i class="fas fa-book-open"></i>
+                    <p>You haven't created any courses yet.</p>
+                    <a th:href="@{/create-course}" class="hero-btn">Create Your First Course</a>
+                </div>
             </div>
 
-            <!-- Sidebar -->
-            <div class="col-lg-4">
-
-                <div class="dashboard-card text-start p-4 mb-4">
-                    <h5 class="mb-3">My Account</h5>
-                    <div class="d-flex align-items-start flex-wrap mb-3">
-                        <div class="card-icon purple me-3" style="width:44px;height:44px;font-size:1.1rem;"><i class="fas fa-user"></i></div>
-                        <div>
-                            <p class="text-muted small mb-0">Full Name</p>
-                            <p class="fw-semibold mb-0" th:text="${fullName ?: 'Not set'}">Not set</p>
+            <!-- STUDENT: Enrolled Courses -->
+            <div th:if="${role == 'student'}" class="mb-4">
+                <div class="section-header">
+                    <h4><i class="fas fa-play-circle" style="color:#2563eb;margin-right:0.4rem;"></i>Continue Learning</h4>
+                    <a th:href="@{/courses}">Browse catalog →</a>
+                </div>
+                <div th:if="${enrolledCourses != null and !#lists.isEmpty(enrolledCourses)}">
+                    <a th:each="c : ${enrolledCourses}" th:href="@{/course/{id}(id=${c.id})}" class="course-row">
+                        <div th:class="${c.contentType == 'VIDEO'} ? 'course-row-icon' : 'course-row-icon text-type'">
+                            <i th:class="${c.contentType == 'VIDEO'} ? 'fas fa-video' : 'fas fa-file-alt'"></i>
                         </div>
-                    </div>
-                    <div class="d-flex align-items-start flex-wrap mb-3">
-                        <div class="card-icon blue me-3" style="width:44px;height:44px;font-size:1.1rem;"><i class="fas fa-at"></i></div>
-                        <div>
-                            <p class="text-muted small mb-0">Nickname</p>
-                            <p class="fw-semibold mb-0" th:text="${nickname ?: 'Not set'}">Not set</p>
+                        <div class="flex-grow-1 overflow-hidden">
+                            <h5 class="text-truncate" th:text="${c.title}">Title</h5>
+                            <p th:text="${c.category + ' · ' + c.level}">Meta</p>
                         </div>
-                    </div>
-                    <div class="d-flex align-items-start flex-wrap mb-3">
-                        <div class="card-icon green me-3" style="width:44px;height:44px;font-size:1.1rem;"><i class="far fa-envelope"></i></div>
-                        <div>
-                            <p class="text-muted small mb-0">Email</p>
-                            <p class="fw-semibold mb-0" style="word-break:break-all;" th:text="${email ?: 'Not set'}">Not set</p>
-                        </div>
-                    </div>
-                    <div class="d-flex align-items-start flex-wrap">
-                        <div class="card-icon orange me-3" style="width:44px;height:44px;font-size:1.1rem;"><i class="fas fa-calendar-alt"></i></div>
-                        <div>
-                            <p class="text-muted small mb-0">Joined</p>
-                            <p class="fw-semibold mb-0" th:text="${joinedAt ?: 'Unknown'}">Unknown</p>
-                        </div>
-                    </div>
+                        <span th:class="${c.contentType == 'VIDEO'} ? 'course-row-badge badge-video' : 'course-row-badge badge-text'" th:text="${c.contentType}">TYPE</span>
+                        <i class="fas fa-chevron-right" style="color:#d1d5db; font-size:0.8rem; flex-shrink:0;"></i>
+                    </a>
+                </div>
+                <div th:if="${enrolledCourses == null or #lists.isEmpty(enrolledCourses)}" class="empty-box mb-3">
+                    <i class="fas fa-book-open"></i>
+                    <p>You haven't enrolled in any courses yet.</p>
+                    <a th:href="@{/courses}" class="hero-btn">Find a Course</a>
                 </div>
 
-                <div class="upcoming-card p-4">
-                    <th:block th:if="${role == 'lecturer'}">
-                        <i class="fas fa-video fa-2x text-primary mb-2"></i>
-                        <h5>Host a Live Session</h5>
-                        <p class="text-muted small">Start a live interactive study group or broadcast for your students.</p>
-                        <a th:href="@{/create-session}" class="hero-btn d-inline-block mt-2">Create Session</a>
-                    </th:block>
-                    <th:block th:if="${role == 'student'}">
-                        <i class="fas fa-users fa-2x text-primary mb-2"></i>
-                        <h5>Live Study Groups</h5>
-                        <p class="text-muted small">Join active peers or start your own study group.</p>
-                        <a th:href="@{/sessions}" class="hero-btn d-inline-block mt-2">Join Session</a>
-                    </th:block>
+                <!-- Available Courses -->
+                <div th:if="${availableCourses != null and !#lists.isEmpty(availableCourses)}" class="mt-4">
+                    <div class="section-header">
+                        <h4><i class="fas fa-compass" style="color:#7c3aed;margin-right:0.4rem;"></i>Explore More</h4>
+                        <a th:href="@{/courses}">View all →</a>
+                    </div>
+                    <a th:each="c : ${availableCourses}" th:href="@{/course/{id}(id=${c.id})}" class="course-row">
+                        <div th:class="${c.contentType == 'VIDEO'} ? 'course-row-icon' : 'course-row-icon text-type'">
+                            <i th:class="${c.contentType == 'VIDEO'} ? 'fas fa-video' : 'fas fa-file-alt'"></i>
+                        </div>
+                        <div class="flex-grow-1 overflow-hidden">
+                            <h5 class="text-truncate" th:text="${c.title}">Title</h5>
+                            <p th:text="${c.category + ' · ' + c.level}">Meta</p>
+                        </div>
+                        <i class="fas fa-arrow-right" style="color:#2563eb; flex-shrink:0;"></i>
+                    </a>
                 </div>
-
             </div>
         </div>
 
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Account Card -->
+            <div class="sidebar-card">
+                <h5><i class="fas fa-user-circle" style="color:#2563eb;margin-right:0.4rem;"></i>My Account</h5>
+                <div class="account-row">
+                    <div class="account-icon blue"><i class="fas fa-user"></i></div>
+                    <div><p>Full Name</p><h6 th:text="${fullName ?: 'Not set'}">Name</h6></div>
+                </div>
+                <div class="account-row">
+                    <div class="account-icon" style="background:#f5f3ff;color:#7c3aed;"><i class="fas fa-at"></i></div>
+                    <div><p>Nickname</p><h6 th:text="${nickname ?: 'Not set'}">Nickname</h6></div>
+                </div>
+                <div class="account-row">
+                    <div class="account-icon green"><i class="far fa-envelope"></i></div>
+                    <div><p>Email</p><h6 th:text="${email ?: 'Not set'}">Email</h6></div>
+                </div>
+                <div class="account-row">
+                    <div class="account-icon orange"><i class="fas fa-calendar-alt"></i></div>
+                    <div><p>Joined</p><h6 th:text="${joinedAt ?: 'Unknown'}">Date</h6></div>
+                </div>
+            </div>
+
+            <!-- Live Sessions CTA -->
+            <div class="cta-card">
+                <th:block th:if="${role == 'lecturer'}">
+                    <i class="fas fa-broadcast-tower"></i>
+                    <h5>Host a Live Session</h5>
+                    <p>Start an interactive broadcast for your students right now.</p>
+                    <a th:href="@{/create-session}"><i class="fas fa-play me-1"></i> Create Session</a>
+                </th:block>
+                <th:block th:if="${role == 'student'}">
+                    <i class="fas fa-users"></i>
+                    <h5>Live Study Groups</h5>
+                    <p>Join an active session or enter a room code from your lecturer.</p>
+                    <a th:href="@{/sessions}"><i class="fas fa-sign-in-alt me-1"></i> Join Session</a>
+                </th:block>
+            </div>
+        </div>
     </div>
+
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/script.js"></script>
 </body>
 </html>

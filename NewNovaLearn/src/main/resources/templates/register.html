@@ -105,9 +105,14 @@
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label" for="email">Email Address</label>
-                            <input type="email" class="form-control" id="email"
-                                   th:field="*{email}" placeholder="name@example.com" required>
+                            <label class="form-label" for="emailPrefix">Email Address</label>
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="emailPrefix"
+                                       placeholder="username" required
+                                       th:value="${registerForm.email != null ? #strings.substringBefore(registerForm.email, '@') : ''}">
+                                <span class="input-group-text" style="background:#f8fafc; color:#6b7280; font-weight:500;">@gmail.com</span>
+                            </div>
+                            <input type="hidden" id="email" th:field="*{email}">
                         </div>
 
                         <div class="mb-4">
@@ -177,6 +182,21 @@
         const ruleLength = document.getElementById('rule-length');
         const ruleLetter = document.getElementById('rule-letter');
         const ruleNumber = document.getElementById('rule-number');
+        const emailPrefix = document.getElementById('emailPrefix');
+        const emailHidden = document.getElementById('email');
+
+        // Automatically form the email
+        function updateEmail() {
+            if (emailPrefix.value.trim().length > 0) {
+                emailHidden.value = emailPrefix.value.trim() + '@gmail.com';
+            } else {
+                emailHidden.value = '';
+            }
+        }
+        
+        emailPrefix.addEventListener('input', updateEmail);
+        // Initialize on load if there's a pre-filled value
+        updateEmail();
 
         const COLOR_WEAK = '#ef4444';
         const COLOR_MEDIUM = '#f59e0b';

@@ -64,11 +64,11 @@ public class CourseService {
 
     /** Create a text-based course */
     public Course createCourseText(String title, String category, String level,
-                                   String description, String textContent, User lecturer) {
+                                   String description, String textContent, String documentPath, User lecturer) {
         Course course = Course.builder()
                 .title(title).category(category).level(level)
                 .description(description).contentType("TEXT")
-                .textContent(textContent).lecturer(lecturer)
+                .textContent(textContent).documentPath(documentPath).lecturer(lecturer)
                 .build();
         return courseRepository.save(course);
     }
@@ -135,10 +135,10 @@ public class CourseService {
         return coursePostRepository.save(post);
     }
 
-    public CoursePost addTextPost(Course course, String topic, String textContent) {
+    public CoursePost addTextPost(Course course, String topic, String textContent, String documentPath) {
         CoursePost post = CoursePost.builder()
                 .course(course).topic(topic)
-                .contentType("TEXT").textContent(textContent)
+                .contentType("TEXT").textContent(textContent).documentPath(documentPath)
                 .build();
         return coursePostRepository.save(post);
     }

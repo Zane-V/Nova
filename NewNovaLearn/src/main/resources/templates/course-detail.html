@@ -312,7 +312,7 @@
             <th:block th:if="${course.contentType == 'VIDEO'}">
                 <div th:if="${course.videoPath != null and !#strings.isEmpty(course.videoPath)}">
                     <video class="cd-video-player" controls
-                           th:src="'/uploads/' + ${course.videoPath}">
+                           th:src="${#strings.startsWith(course.videoPath, 'http') ? course.videoPath : '/uploads/' + course.videoPath}">
                         Your browser does not support the video tag.
                     </video>
                 </div>
@@ -325,12 +325,28 @@
 
             <!-- Text -->
             <th:block th:if="${course.contentType == 'TEXT'}">
+                <div th:if="${course.documentPath != null}" style="margin-bottom: 1.5rem;">
+                    <div style="display:flex; align-items:center; justify-content:space-between; background:#f0f4ff; border:1px solid #d0d5e8; border-radius:12px; padding:1rem 1.5rem;">
+                        <div style="display:flex; align-items:center; gap:1rem;">
+                            <div style="background:white; color:#e74c3c; width:45px; height:45px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+                                <i class="fas fa-file-pdf"></i>
+                            </div>
+                            <div>
+                                <h4 style="margin:0; font-size:1.05rem; font-weight:600; color:#1a1a24;">Course Document</h4>
+                                <span style="font-size:0.85rem; color:#6c757d;">View attachment</span>
+                            </div>
+                        </div>
+                        <a th:href="${#strings.startsWith(course.documentPath, 'http') ? course.documentPath : '/uploads/' + course.documentPath}" target="_blank" class="btn btn-primary" style="border-radius:8px; font-weight:600; padding:0.5rem 1.25rem;">
+                            <i class="fas fa-external-link-alt" style="margin-right:0.4rem;"></i> Open
+                        </a>
+                    </div>
+                </div>
                 <div th:if="${course.textContent != null and !#strings.isEmpty(course.textContent)}"
                      class="cd-text-body" th:text="${course.textContent}"></div>
-                <div th:if="${course.textContent == null or #strings.isEmpty(course.textContent)}"
+                <div th:if="${(course.textContent == null or #strings.isEmpty(course.textContent)) and course.documentPath == null}"
                      style="text-align:center;padding:2rem;color:#a0a5b1;">
                     <i class="fas fa-file-alt" style="font-size:2rem;display:block;margin-bottom:0.5rem;"></i>
-                    No text content yet.
+                    No text content or document yet.
                 </div>
             </th:block>
         </div>
@@ -359,13 +375,28 @@
                     <!-- Video post -->
                     <th:block th:if="${post.contentType == 'VIDEO'}">
                         <video class="post-video" controls
-                               th:src="'/uploads/' + ${post.videoPath}">
+                               th:src="${#strings.startsWith(post.videoPath, 'http') ? post.videoPath : '/uploads/' + post.videoPath}">
                             Your browser does not support the video tag.
                         </video>
                     </th:block>
                     <!-- Text post -->
                     <th:block th:if="${post.contentType == 'TEXT'}">
-                        <div class="post-text-content" th:text="${post.textContent}"></div>
+                        <div th:if="${post.documentPath != null}" style="margin-bottom: 1.2rem;">
+                            <div style="display:flex; align-items:center; justify-content:space-between; background:#fafbff; border:1px solid #eef0f7; border-radius:10px; padding:0.8rem 1.2rem;">
+                                <div style="display:flex; align-items:center; gap:0.8rem;">
+                                    <div style="background:white; color:#e74c3c; width:38px; height:38px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; box-shadow:0 2px 6px rgba(0,0,0,0.04);">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </div>
+                                    <div>
+                                        <h4 style="margin:0; font-size:0.95rem; font-weight:600; color:#1a1a24;">Topic Attachment</h4>
+                                    </div>
+                                </div>
+                                <a th:href="${#strings.startsWith(post.documentPath, 'http') ? post.documentPath : '/uploads/' + post.documentPath}" target="_blank" class="btn btn-sm btn-outline-primary" style="border-radius:6px; font-weight:600;">
+                                    <i class="fas fa-external-link-alt" style="margin-right:0.3rem;"></i> View
+                                </a>
+                            </div>
+                        </div>
+                        <div th:if="${post.textContent != null and !#strings.isEmpty(post.textContent)}" class="post-text-content" th:text="${post.textContent}"></div>
                     </th:block>
                 </div>
             </div>
@@ -422,7 +453,22 @@
                     <!-- Text input -->
                     <div class="text-panel-sm" id="postTextPanel">
                         <textarea id="postTextContent" name="textContent" class="form-input form-textarea"
-                                  rows="6" placeholder="Write your topic content here..."></textarea>
+                                  rows="6" placeholder="Write your topic content here... (Optional if uploading document)"></textarea>
+                        
+                        <div style="margin-top: 1rem;">
+                            <label style="font-size: 0.83rem; font-weight: 500; color: #4a4a58; margin-bottom: 0.45rem;">Or Upload Document</label>
+                            <div class="upload-area-sm">
+                                <p>PDF or Images</p>
+                                <button type="button" class="btn btn-outline-primary select-file-btn"
+                                        style="padding:0.4rem 1rem;font-size:0.85rem;border-radius:20px;"
+                                        onclick="document.getElementById('postDocumentFile').click()">
+                                    Select Document
+                                </button>
+                                <input type="file" id="postDocumentFile" name="documentFile" style="display:none;"
+                                       accept=".pdf,image/*" onchange="postDocFileChosen(this)">
+                                <div id="postDocFileLabel" style="margin-top:0.5rem;font-size:0.82rem;color:#6c757d;">No file selected</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -458,6 +504,17 @@
 
         function postFileChosen(input) {
             const label = document.getElementById('postFileLabel');
+            if (input.files && input.files.length > 0) {
+                const f = input.files[0];
+                const mb = (f.size / (1024 * 1024)).toFixed(1);
+                label.innerHTML = 'Selected: <strong>' + f.name + '</strong> (' + mb + ' MB)';
+            } else {
+                label.textContent = 'No file selected';
+            }
+        }
+
+        function postDocFileChosen(input) {
+            const label = document.getElementById('postDocFileLabel');
             if (input.files && input.files.length > 0) {
                 const f = input.files[0];
                 const mb = (f.size / (1024 * 1024)).toFixed(1);

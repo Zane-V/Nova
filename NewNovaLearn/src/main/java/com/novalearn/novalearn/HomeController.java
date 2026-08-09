@@ -7,6 +7,7 @@ import com.novalearn.novalearn.dto.ResetPasswordForm;
 import com.novalearn.novalearn.model.Course;
 import com.novalearn.novalearn.model.Role;
 import com.novalearn.novalearn.model.User;
+import com.novalearn.novalearn.service.CloudinaryService;
 import com.novalearn.novalearn.service.CourseService;
 import com.novalearn.novalearn.service.EmailService;
 import com.novalearn.novalearn.service.UserService;
@@ -47,6 +48,7 @@ public class HomeController {
     private final UserService userService;
     private final EmailService emailService;
     private final CourseService courseService;
+    private final CloudinaryService cloudinaryService;
     private final PasswordEncoder passwordEncoder;
 
     // Removed in-memory rate limiting as it is now database-backed
@@ -55,10 +57,11 @@ public class HomeController {
     private String uploadDir;
 
     public HomeController(UserService userService, EmailService emailService,
-                          CourseService courseService, PasswordEncoder passwordEncoder) {
+                          CourseService courseService, CloudinaryService cloudinaryService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.emailService = emailService;
         this.courseService = courseService;
+        this.cloudinaryService = cloudinaryService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -233,6 +236,7 @@ public class HomeController {
             @Valid CreateCourseForm form,
             BindingResult bindingResult,
             @RequestParam(required = false) MultipartFile videoFile,
+            @RequestParam(required = false) MultipartFile documentFile,
             Principal principal,
             Model model) {
 
@@ -260,12 +264,16 @@ public class HomeController {
                 String savedPath = saveUploadedFile(videoFile);
                 courseService.createCourseVideo(form.getTitle(), form.getCategory(), form.getLevel(), form.getDescription(), savedPath, lecturer);
             } else {
-                if (form.getTextContent() == null || form.getTextContent().isBlank()) {
-                    model.addAttribute("errorMessage", "Please enter some text content for the course.");
+                String documentPath = null;
+                if (documentFile != null && !documentFile.isEmpty()) {
+                    documentPath = saveUploadedFile(documentFile);
+                }
+                if ((form.getTextContent() == null || form.getTextContent().isBlank()) && documentPath == null) {
+                    model.addAttribute("errorMessage", "Please enter some text content or upload a document for the course.");
                     model.addAttribute("createCourseForm", form);
                     return "create-course";
                 }
-                courseService.createCourseText(form.getTitle(), form.getCategory(), form.getLevel(), form.getDescription(), form.getTextContent(), lecturer);
+                courseService.createCourseText(form.getTitle(), form.getCategory(), form.getLevel(), form.getDescription(), form.getTextContent(), documentPath, lecturer);
             }
             return "redirect:/lecturer-dashboard?success=Course+created+successfully!";
         } catch (Exception e) {
@@ -318,6 +326,7 @@ public class HomeController {
                                 @RequestParam String contentType,
                                 @RequestParam(required = false) String textContent,
                                 @RequestParam(required = false) MultipartFile videoFile,
+                                @RequestParam(required = false) MultipartFile documentFile,
                                 Principal principal,
                                 Model model) {
 
@@ -345,12 +354,16 @@ public class HomeController {
                 String savedPath = saveUploadedFile(videoFile);
                 courseService.addVideoPost(course, topic, savedPath);
             } else {
-                if (textContent == null || textContent.isBlank()) {
-                    model.addAttribute("errorMessage", "Please enter some text content for this topic.");
+                String documentPath = null;
+                if (documentFile != null && !documentFile.isEmpty()) {
+                    documentPath = saveUploadedFile(documentFile);
+                }
+                if ((textContent == null || textContent.isBlank()) && documentPath == null) {
+                    model.addAttribute("errorMessage", "Please enter some text content or upload a document for this topic.");
                     populateCourseModel(model, course, id, true);
                     return "course-detail";
                 }
-                courseService.addTextPost(course, topic, textContent);
+                courseService.addTextPost(course, topic, textContent, documentPath);
             }
         } catch (Exception e) {
             model.addAttribute("errorMessage", "Failed to publish topic: " + e.getMessage());
@@ -372,7 +385,7 @@ public class HomeController {
     // ── File Upload Helper ────────────────────────────────────────────────────
 
     private String saveUploadedFile(MultipartFile file) throws IOException {
-        Path uploadPath = Paths.get(uploadDir);
+        Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
         if (!Files.exists(uploadPath)) Files.createDirectories(uploadPath);
         String ext = "";
         String original = file.getOriginalFilename();
@@ -387,8 +400,16 @@ public class HomeController {
         }
 
         String filename = UUID.randomUUID() + ext;
-        file.transferTo(uploadPath.resolve(filename).toFile());
-        return filename;
+        Path tempFile = uploadPath.resolve(filename);
+        Files.copy(file.getInputStream(), tempFile, StandardCopyOption.REPLACE_EXISTING);
+        
+        try {
+            // Upload to Cloudinary
+            return cloudinaryService.uploadFile(tempFile.toFile(), file.getContentType());
+        } finally {
+            // Delete temporary local file
+            Files.deleteIfExists(tempFile);
+        }
     }
 
     // ── Forgot / Reset Password ───────────────────────────────────────────────

@@ -1,63 +1,144 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courses | Nova Learning</title>
-
+    <meta name="description" content="Browse all courses available on Nova Learning.">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <style>
+        body { font-family: 'Outfit', sans-serif; background: #f8fafc; color: #1a1a2e; padding-bottom: 60px; }
+
+        .page-hero {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white; padding: 5rem 1.5rem 4rem;
+            text-align: center; position: relative; overflow: hidden;
+        }
+        .page-hero::before {
+            content: ''; position: absolute; width: 500px; height: 500px; border-radius: 50%;
+            background: rgba(255,255,255,0.06); top: -150px; right: -100px;
+        }
+        .page-hero h1 { font-size: 2.8rem; font-weight: 800; margin-bottom: 0.75rem; }
+        .page-hero p { font-size: 1.1rem; opacity: 0.85; max-width: 480px; margin: 0 auto; }
+        .page-hero .hero-nav { margin-top: 80px; font-size: 0.85rem; opacity: 0.7; }
+        .page-hero .hero-nav a { color: white; text-decoration: none; }
+
+        .courses-section { padding: 3rem 1.5rem; max-width: 1200px; margin: 0 auto; }
+
+        .courses-topbar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .courses-topbar h2 { font-size: 1.3rem; font-weight: 700; color: #1a1a2e; }
+        .courses-topbar span { font-size: 0.9rem; color: #6b7280; background: #f3f4f6; padding: 0.35rem 0.85rem; border-radius: 999px; }
+
+        .course-card-new {
+            background: white; border-radius: 18px; overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: transform 0.25s, box-shadow 0.25s;
+            height: 100%; display: flex; flex-direction: column;
+            text-decoration: none; color: inherit;
+        }
+        .course-card-new:hover { transform: translateY(-6px); box-shadow: 0 12px 35px rgba(0,0,0,0.12); color: inherit; }
+
+        .course-thumb {
+            height: 190px; overflow: hidden; position: relative;
+        }
+        .course-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s; }
+        .course-card-new:hover .course-thumb img { transform: scale(1.06); }
+        .course-thumb .cat-badge {
+            position: absolute; top: 12px; left: 12px;
+            background: rgba(37,99,235,0.9); color: white;
+            font-size: 0.72rem; font-weight: 700; padding: 0.3rem 0.8rem;
+            border-radius: 999px; backdrop-filter: blur(4px);
+        }
+        .course-thumb .type-badge {
+            position: absolute; top: 12px; right: 12px;
+            font-size: 0.7rem; font-weight: 700; padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+        }
+        .type-video { background: rgba(124,58,237,0.9); color: white; }
+        .type-text { background: rgba(245,158,11,0.9); color: white; }
+
+        .course-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
+        .course-body h4 { font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; line-height: 1.4; color: #1a1a2e; }
+        .course-body p { font-size: 0.85rem; color: #6b7280; line-height: 1.55; flex: 1; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .course-level { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.65rem; border-radius: 999px; background: #e6f0ff; color: #2563eb; margin-bottom: 1rem; }
+        .view-btn-new {
+            display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white; font-weight: 700; font-size: 0.88rem;
+            padding: 0.6rem; border-radius: 10px;
+            text-decoration: none; transition: opacity 0.2s;
+        }
+        .view-btn-new:hover { opacity: 0.9; color: white; }
+
+        .empty-courses { text-align: center; padding: 5rem 2rem; }
+        .empty-courses i { font-size: 3.5rem; color: #d1d5db; margin-bottom: 1.5rem; display: block; }
+        .empty-courses h3 { font-size: 1.3rem; font-weight: 700; color: #374151; margin-bottom: 0.5rem; }
+        .empty-courses p { color: #9ca3af; }
+
+        @media (max-width: 576px) {
+            .page-hero h1 { font-size: 2rem; }
+            .page-hero p { font-size: 0.95rem; }
+        }
+    </style>
 </head>
 <body>
 
 <div th:replace="~{fragments/navbar :: navbar}"></div>
+<div style="height: 80px;"></div>
 
-<!-- Courses Header -->
-<section class="page-header">
-    <div class="container text-center">
-        <h1>Explore Our Courses</h1>
-        <p>Learn professional skills from expert instructors.</p>
-    </div>
+<!-- Hero -->
+<section class="page-hero">
+    <h1><i class="fas fa-graduation-cap" style="font-size:0.8em;"></i> Explore Courses</h1>
+    <p>Learn professional skills from expert instructors. Start for free today.</p>
 </section>
 
-<!-- Course List -->
-<section class="popular-courses py-5">
-    <div class="container">
+<!-- Course Grid -->
+<div class="courses-section">
+    <div class="courses-topbar">
+        <h2>All Courses</h2>
+        <span th:text="${allCourses != null ? #lists.size(allCourses) : 0} + ' available'">0 available</span>
+    </div>
 
-        <div class="row g-4">
-
-            <div class="col-lg-4" th:each="c : ${allCourses}">
-                <div class="course-card">
-                    <div class="course-image">
-                        <img th:if="${c.category == 'Computer Science'}" src="https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=800&amp;q=80" alt="Tech">
-                        <img th:if="${c.category == 'Business'}" src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&amp;q=80" alt="Business">
-                        <img th:if="${c.category == 'Design'}" src="https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=800&amp;q=80" alt="Design">
-                        <img th:if="${c.category == 'Science'}" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&amp;q=80" alt="Science">
-                        <img th:if="${c.category != 'Computer Science' and c.category != 'Business' and c.category != 'Design' and c.category != 'Science'}" src="https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=800&amp;q=80" alt="Other">
-                        <span class="badge" th:text="${c.category}">Category</span>
-                    </div>
-                    <div class="course-content">
-                        <h4 th:text="${c.title}">Course Title</h4>
-                        <p th:text="${c.description}">Course description</p>
-                        <a th:href="@{/course/{id}(id=${c.id})}" class="view-btn">View Course</a>
-                    </div>
+    <div class="row g-4" th:if="${allCourses != null and !#lists.isEmpty(allCourses)}">
+        <div class="col-xl-3 col-lg-4 col-md-6" th:each="c : ${allCourses}">
+            <a th:href="@{/course/{id}(id=${c.id})}" class="course-card-new">
+                <div class="course-thumb">
+                    <img th:src="${c.category == 'Computer Science'} ? 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?w=600&q=80'
+                         : (${c.category == 'Business'} ? 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80'
+                         : (${c.category == 'Design'} ? 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=600&q=80'
+                         : (${c.category == 'Mathematics'} ? 'https://images.unsplash.com/photo-1509228468518-180dd4864904?w=600&q=80'
+                         : (${c.category == 'Medicine'} ? 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&q=80'
+                         : 'https://images.unsplash.com/photo-1506784983877-45594efa4cbe?w=600&q=80'))))" alt="course">
+                    <span class="cat-badge" th:text="${c.category}">Category</span>
+                    <span th:class="${c.contentType == 'VIDEO'} ? 'type-badge type-video' : 'type-badge type-text'">
+                        <i th:class="${c.contentType == 'VIDEO'} ? 'fas fa-play' : 'fas fa-file-alt'"></i>
+                        <span th:text="${c.contentType}"></span>
+                    </span>
                 </div>
-            </div>
-
-            <!-- Empty state -->
-            <div class="col-12 text-center" th:if="${allCourses == null or #lists.isEmpty(allCourses)}">
-                <i class="fas fa-search fa-2x text-muted mb-3"></i>
-                <h4>No courses available yet</h4>
-                <p class="text-muted">Check back soon &mdash; new courses are added regularly.</p>
-            </div>
-
+                <div class="course-body">
+                    <span class="course-level"><i class="fas fa-signal"></i> <span th:text="${c.level}">Beginner</span></span>
+                    <h4 th:text="${c.title}">Course Title</h4>
+                    <p th:text="${c.description}">Description</p>
+                    <div class="view-btn-new"><i class="fas fa-arrow-right"></i> View Course</div>
+                </div>
+            </a>
         </div>
-
     </div>
-</section>
+
+    <!-- Empty state -->
+    <div class="empty-courses" th:if="${allCourses == null or #lists.isEmpty(allCourses)}">
+        <i class="fas fa-book-open"></i>
+        <h3>No courses yet</h3>
+        <p>Check back soon — new courses are added regularly.</p>
+    </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/assets/js/script.js"></script>
 </body>
 </html>

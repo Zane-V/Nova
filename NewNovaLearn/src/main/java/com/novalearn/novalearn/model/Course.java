@@ -39,6 +39,9 @@ public class Course {
     @Column(columnDefinition = "TEXT")
     private String textContent;
 
+    /** Path to the uploaded document file when contentType = TEXT */
+    private String documentPath;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lecturer_id")
     private User lecturer;

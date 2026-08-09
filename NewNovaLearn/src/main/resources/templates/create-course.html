@@ -219,12 +219,32 @@
 
                         <!-- Text content panel -->
                         <div class="text-area-panel" id="textPanel">
-                            <div class="cc-form-group" style="margin-bottom:0;">
-                                <label for="textContent">Course Text Content *</label>
+                            <div class="cc-form-group">
+                                <label for="textContent">Course Text Content (Optional if uploading document)</label>
                                 <textarea id="textContent" name="textContent"
                                     th:field="*{textContent}"
-                                    class="cc-input cc-textarea" rows="10"
+                                    class="cc-input cc-textarea" rows="7"
                                     placeholder="Write your course content here. You can include explanations, theory, examples, links, etc."></textarea>
+                            </div>
+                            
+                            <div class="cc-form-group" style="margin-bottom:0;">
+                                <label>Or Upload Document (PDF, Images)</label>
+                                <div class="upload-area" style="padding: 1.5rem; min-height: unset; margin-top: 0.5rem;" id="docDropZone"
+                                     ondragover="handleDocDragOver(event)"
+                                     ondragleave="handleDocDragLeave(event)"
+                                     ondrop="handleDocDrop(event)">
+                                    <div class="upload-icon-container" style="width: 50px; height: 50px; font-size: 1.2rem; margin-bottom: 0.5rem;">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </div>
+                                    <h3 style="font-size: 1.1rem;">Drag & drop document</h3>
+                                    <button type="button" class="btn btn-outline-primary select-file-btn" style="padding: 0.4rem 1rem; font-size: 0.9rem;"
+                                            onclick="document.getElementById('documentFile').click()">
+                                        Select File
+                                    </button>
+                                    <input type="file" id="documentFile" name="documentFile" class="hidden-file-input"
+                                           accept=".pdf,image/*" onchange="docFileChosen(this)">
+                                    <div class="file-chosen-label" id="docFileChosenLabel">No file selected</div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -328,6 +348,38 @@
                 dt.items.add(e.dataTransfer.files[0]);
                 input.files = dt.files;
                 fileChosen(input);
+            }
+        }
+
+        function docFileChosen(input) {
+            const label = document.getElementById('docFileChosenLabel');
+            if (input.files && input.files.length > 0) {
+                const f = input.files[0];
+                const mb = (f.size / (1024 * 1024)).toFixed(1);
+                label.innerHTML = 'Selected: <span>' + f.name + ' (' + mb + ' MB)</span>';
+            } else {
+                label.innerHTML = 'No file selected';
+            }
+        }
+
+        function handleDocDragOver(e) {
+            e.preventDefault();
+            document.getElementById('docDropZone').style.borderColor = '#4371fa';
+            document.getElementById('docDropZone').style.background = '#f0f4ff';
+        }
+        function handleDocDragLeave(e) {
+            document.getElementById('docDropZone').style.borderColor = '';
+            document.getElementById('docDropZone').style.background = '';
+        }
+        function handleDocDrop(e) {
+            e.preventDefault();
+            handleDocDragLeave(e);
+            const input = document.getElementById('documentFile');
+            if (e.dataTransfer.files.length > 0) {
+                const dt = new DataTransfer();
+                dt.items.add(e.dataTransfer.files[0]);
+                input.files = dt.files;
+                docFileChosen(input);
             }
         }
 

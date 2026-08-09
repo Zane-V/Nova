@@ -4,129 +4,192 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Sessions - NovaLearn</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Join or host live interactive learning sessions on NovaLearn.">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/assets/css/style.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .sessions-page { min-height: 100vh; background: var(--bg-color); }
-        .sessions-container { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
-        .sessions-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
-        .sessions-header h1 { font-size: 1.7rem; font-weight: 700; }
-        .sessions-header p { color: var(--text-muted); font-size: 0.9rem; }
-        .session-card {
-            background: var(--card-bg); border: 1px solid var(--border-color);
-            border-radius: 18px; padding: 1.5rem; display: flex;
-            justify-content: space-between; align-items: center;
-            gap: 1rem; margin-bottom: 1rem;
-            transition: box-shadow 0.2s, transform 0.2s;
+        body { font-family: 'Outfit', sans-serif; background: #f8fafc; color: #1a1a2e; padding-bottom: 80px; }
+        .sessions-container { max-width: 860px; margin: 0 auto; padding: 2rem 1.5rem; }
+        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: #6b7280; text-decoration: none; font-size: 0.88rem; font-weight: 600; margin-bottom: 1.75rem; transition: color 0.2s; }
+        .back-link:hover { color: #2563eb; }
+
+        /* Page hero */
+        .sessions-hero {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            border-radius: 20px; padding: 2rem 2.5rem;
+            color: white; margin-bottom: 2rem; position: relative; overflow: hidden;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
         }
-        .session-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.1); transform: translateY(-2px); }
-        .session-card-left { display: flex; align-items: center; gap: 1rem; }
-        .session-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; flex-shrink: 0; background: rgba(109,40,217,0.12); color: var(--primary-color); }
-        .session-info h3 { font-size: 1rem; font-weight: 600; margin-bottom: 0.2rem; }
-        .session-info p { font-size: 0.82rem; color: var(--text-muted); margin: 0; }
-        .session-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.65rem; border-radius: 999px; margin-top: 0.3rem; }
-        .badge-active { background: rgba(34,197,94,0.15); color: #16a34a; }
-        .badge-scheduled { background: rgba(59,130,246,0.15); color: #2563eb; }
-        .session-code { font-family: monospace; font-size: 0.85rem; font-weight: 700; background: var(--bg-color); padding: 0.3rem 0.7rem; border-radius: 8px; letter-spacing: 0.1em; color: var(--primary-color); border: 1px solid var(--border-color); }
-        .join-form { display: flex; gap: 0.5rem; margin-bottom: 2rem; flex-wrap: wrap; }
-        .join-form input { flex: 1; min-width: 160px; padding: 0.75rem 1rem; border-radius: 12px; border: 1px solid var(--border-color); background: var(--card-bg); font-family: monospace; font-size: 1rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; outline: none; color: var(--text-color); }
-        .join-form input:focus { border-color: var(--primary-color); }
-        .back-link { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--text-muted); text-decoration: none; font-size: 0.9rem; margin-bottom: 1.5rem; transition: color 0.2s; }
-        .back-link:hover { color: var(--primary-color); }
-        .empty-state { text-align: center; padding: 4rem 1rem; }
-        .empty-state i { font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem; display: block; }
-        .empty-state p { color: var(--text-muted); }
+        .sessions-hero::before {
+            content: ''; position: absolute; width: 200px; height: 200px; border-radius: 50%;
+            background: rgba(255,255,255,0.07); top: -50px; right: -50px;
+        }
+        .sessions-hero h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.25rem; }
+        .sessions-hero p { font-size: 0.9rem; opacity: 0.85; margin: 0; }
+        .host-btn {
+            background: rgba(255,255,255,0.2); color: white;
+            border: 1.5px solid rgba(255,255,255,0.4); border-radius: 10px;
+            padding: 0.6rem 1.25rem; font-weight: 700; font-size: 0.9rem;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+            transition: background 0.2s; white-space: nowrap;
+        }
+        .host-btn:hover { background: rgba(255,255,255,0.3); color: white; }
+
+        /* Join by code */
+        .join-card { background: white; border-radius: 16px; padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.05); margin-bottom: 2rem; }
+        .join-card label { font-size: 0.85rem; font-weight: 700; color: #374151; display: block; margin-bottom: 0.5rem; }
+        .join-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+        .join-input {
+            flex: 1; min-width: 150px; padding: 0.75rem 1rem;
+            border: 1.5px solid #e5e7eb; border-radius: 10px;
+            font-family: monospace; font-size: 1.1rem; font-weight: 700;
+            letter-spacing: 0.15em; text-transform: uppercase;
+            outline: none; color: #1a1a2e; transition: border-color 0.2s;
+        }
+        .join-input:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+        .join-submit {
+            padding: 0.75rem 1.5rem; border: none; border-radius: 10px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white; font-weight: 700; font-size: 0.9rem; font-family: 'Outfit', sans-serif;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 0.4rem;
+            transition: opacity 0.2s; white-space: nowrap;
+        }
+        .join-submit:hover { opacity: 0.88; }
+
+        /* Section label */
+        .sessions-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: #9ca3af; margin-bottom: 1rem; }
+
+        /* Session cards */
+        .session-card {
+            background: white; border-radius: 16px; padding: 1.25rem 1.5rem;
+            display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+            margin-bottom: 0.85rem; box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s; flex-wrap: wrap;
+        }
+        .session-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        .session-left { display: flex; align-items: center; gap: 1rem; }
+        .session-icon {
+            width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; background: #eff6ff; color: #2563eb;
+        }
+        .session-info h3 { font-size: 0.98rem; font-weight: 700; margin-bottom: 0.2rem; }
+        .session-info p { font-size: 0.8rem; color: #9ca3af; margin: 0; }
+        .session-badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.72rem; font-weight: 700; padding: 0.22rem 0.65rem; border-radius: 999px; margin-top: 0.3rem; }
+        .badge-active { background: rgba(22,163,74,0.12); color: #16a34a; }
+        .badge-scheduled { background: rgba(37,99,235,0.12); color: #2563eb; }
+        .session-right { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; justify-content: flex-end; }
+        .room-code { font-family: monospace; font-size: 0.85rem; font-weight: 700; background: #f3f4f6; padding: 0.3rem 0.75rem; border-radius: 8px; letter-spacing: 0.1em; color: #2563eb; }
+        .join-btn {
+            padding: 0.5rem 1.1rem; border: none; border-radius: 8px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white; font-weight: 700; font-size: 0.85rem; font-family: 'Outfit', sans-serif;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 0.35rem;
+            transition: opacity 0.2s;
+        }
+        .join-btn:hover { opacity: 0.88; color: white; }
+
+        /* Empty state */
+        .empty-state { text-align: center; padding: 4rem 2rem; background: white; border-radius: 20px; box-shadow: 0 2px 12px rgba(0,0,0,0.05); }
+        .empty-state i { font-size: 3rem; color: #d1d5db; margin-bottom: 1rem; display: block; }
+        .empty-state h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .empty-state p { color: #9ca3af; font-size: 0.9rem; }
+
+        .error-banner { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #dc2626; padding: 0.85rem 1rem; border-radius: 12px; margin-bottom: 1.5rem; font-size: 0.9rem; display: flex; align-items: center; gap: 0.5rem; }
+
+        @media (max-width: 576px) {
+            .sessions-hero { padding: 1.5rem; }
+            .sessions-hero h1 { font-size: 1.4rem; }
+            .session-card { flex-direction: column; align-items: flex-start; }
+            .session-right { width: 100%; justify-content: flex-start; }
+        }
     </style>
-    <link rel="stylesheet" href="/css/animations.css">
 </head>
-<body class="sessions-page">
+<body>
 
-    <div class="sessions-container">
+<div style="height: 20px;"></div>
+<div class="sessions-container">
+    <a th:href="@{/dashboard}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
 
-        <a th:href="@{/dashboard}" class="back-link">
-            <i class="fas fa-arrow-left"></i> Back to Dashboard
-        </a>
-
-        <!-- Error Banner -->
-        <div th:if="${errorMessage}" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.3);color:#dc2626;padding:0.85rem 1rem;border-radius:12px;margin-bottom:1.5rem;font-size:0.9rem;display:flex;align-items:center;gap:0.6rem;">
-            <i class="fas fa-exclamation-circle"></i>
-            <span th:text="${errorMessage}"></span>
-        </div>
-
-        <div class="sessions-header">
-            <div>
-                <h1><i class="fas fa-broadcast-tower" style="color:var(--primary-color);margin-right:0.5rem;"></i>Live Sessions</h1>
-                <p>Join an active session below or enter a room code shared by your lecturer.</p>
-            </div>
-<a th:if="${role == 'lecturer'}" th:href="@{/create-session}"
-	                class="btn btn-primary" style="text-decoration:none; display:inline-flex; align-items:center; gap:0.5rem; white-space:nowrap;">
-                <i class="fas fa-plus"></i> Host New Session
-            </a>
-        </div>
-
-        <!-- Join by room code -->
-        <form th:action="@{/join-session}" method="GET" class="join-form">
-            <input type="text" name="code" placeholder="Enter room code (e.g. AB3X7Y2Z)" maxlength="8" id="roomCodeInput" autocomplete="off">
-            <button type="submit" class="btn btn-primary" style="white-space:nowrap;">
-                <i class="fas fa-sign-in-alt" style="margin-right:0.4rem;"></i> Join Session
-            </button>
-        </form>
-
-        <h2 style="font-size:1rem; font-weight:600; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.06em; margin-bottom:1rem;">
-            Active &amp; Upcoming Sessions
-        </h2>
-
-        <!-- Sessions list -->
-        <div th:if="${!sessions.isEmpty()}">
-            <div th:each="liveSession : ${sessions}" class="session-card">
-                <div class="session-card-left">
-                    <div class="session-icon"><i class="fas fa-video"></i></div>
-                    <div class="session-info">
-                        <h3 th:text="${liveSession.title}">Session Title</h3>
-                        <p>
-                            <i class="fas fa-book" style="margin-right:0.3rem;"></i><span th:text="${liveSession.subject}">Subject</span>
-                            &nbsp;&middot;&nbsp;
-                            <i class="fas fa-user" style="margin-right:0.3rem;"></i><span th:text="${liveSession.host.nickname}">Host</span>
-                        </p>
-                        <span th:classappend="${liveSession.status.name() == 'ACTIVE'} ? 'badge-active' : 'badge-scheduled'" class="session-badge">
-                            <i th:class="${liveSession.status.name() == 'ACTIVE'} ? 'fas fa-circle' : 'far fa-clock'"></i>
-                            <span th:text="${liveSession.status.name() == 'ACTIVE'} ? 'Live Now' : 'Scheduled'"></span>
-                        </span>
-                    </div>
-                </div>
-                <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap; justify-content:flex-end;">
-                    <span class="session-code" th:text="${liveSession.roomCode}">ABCD1234</span>
-                    <a th:href="@{/live-session/{roomCode}(roomCode=${liveSession.roomCode})}"
-                       class="btn btn-primary" style="text-decoration:none; padding: 0.55rem 1.1rem; font-size:0.85rem;">
-                        <i class="fas fa-sign-in-alt" style="margin-right:0.3rem;"></i> Join
-                    </a>
-                </div>
-            </div>
-        </div>
-
-        <!-- Empty state -->
-        <div th:if="${sessions.isEmpty()}" class="empty-state">
-            <i class="fas fa-broadcast-tower"></i>
-            <p>No active or upcoming sessions right now.</p>
-<a th:if="${role == 'lecturer'}" th:href="@{/create-session}"
-	                class="btn btn-primary" style="text-decoration:none; margin-top:1rem; display:inline-block;">
-                <i class="fas fa-plus"></i> Create the First Session
-            </a>
-            <p th:if="${role == 'student'}" style="margin-top:0.5rem; font-size:0.85rem;">Ask your lecturer to share the room code with you.</p>
-        </div>
-
+    <!-- Error -->
+    <div th:if="${errorMessage}" class="error-banner">
+        <i class="fas fa-exclamation-circle"></i>
+        <span th:text="${errorMessage}"></span>
     </div>
 
-    <script>
-        // Auto-uppercase the room code input
-        document.getElementById('roomCodeInput').addEventListener('input', function() {
-            this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-        });
-    </script>
+    <!-- Page Hero -->
+    <div class="sessions-hero">
+        <div>
+            <h1><i class="fas fa-broadcast-tower" style="font-size:0.85em; margin-right:0.5rem;"></i>Live Sessions</h1>
+            <p>Join an active session or enter a room code from your lecturer.</p>
+        </div>
+        <a th:if="${role == 'lecturer'}" th:href="@{/create-session}" class="host-btn">
+            <i class="fas fa-plus"></i> Host New Session
+        </a>
+    </div>
+
+    <!-- Join by code -->
+    <div class="join-card">
+        <label><i class="fas fa-key" style="color:#2563eb; margin-right:0.4rem;"></i>Join with Room Code</label>
+        <form th:action="@{/join-session}" method="GET" class="join-row">
+            <input type="text" name="code" class="join-input" id="roomCodeInput"
+                   placeholder="e.g. AB3X7Y2Z" maxlength="8" autocomplete="off">
+            <button type="submit" class="join-submit">
+                <i class="fas fa-sign-in-alt"></i> Join Session
+            </button>
+        </form>
+    </div>
+
+    <p class="sessions-label">Active &amp; Upcoming Sessions</p>
+
+    <!-- Session list -->
+    <div th:if="${!sessions.isEmpty()}">
+        <div th:each="liveSession : ${sessions}" class="session-card">
+            <div class="session-left">
+                <div class="session-icon"><i class="fas fa-video"></i></div>
+                <div class="session-info">
+                    <h3 th:text="${liveSession.title}">Session Title</h3>
+                    <p>
+                        <i class="fas fa-book" style="margin-right:0.25rem;"></i>
+                        <span th:text="${liveSession.subject}">Subject</span>
+                        &nbsp;·&nbsp;
+                        <i class="fas fa-user" style="margin-right:0.25rem;"></i>
+                        <span th:text="${liveSession.host.nickname}">Host</span>
+                    </p>
+                    <span th:classappend="${liveSession.status.name() == 'ACTIVE'} ? ' badge-active' : ' badge-scheduled'" class="session-badge">
+                        <i th:class="${liveSession.status.name() == 'ACTIVE'} ? 'fas fa-circle' : 'far fa-clock'"></i>
+                        <span th:text="${liveSession.status.name() == 'ACTIVE'} ? 'Live Now' : 'Scheduled'"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="session-right">
+                <span class="room-code" th:text="${liveSession.roomCode}">ABCD1234</span>
+                <a th:href="@{/live-session/{roomCode}(roomCode=${liveSession.roomCode})}" class="join-btn">
+                    <i class="fas fa-sign-in-alt"></i> Join
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Empty state -->
+    <div th:if="${sessions.isEmpty()}" class="empty-state">
+        <i class="fas fa-broadcast-tower"></i>
+        <h3>No active sessions right now</h3>
+        <p>Check back later or ask your lecturer to share the room code.</p>
+        <a th:if="${role == 'lecturer'}" th:href="@{/create-session}" class="host-btn" style="margin-top:1rem; display:inline-flex; background:linear-gradient(135deg,#2563eb,#7c3aed); border:none;">
+            <i class="fas fa-plus"></i> Create the First Session
+        </a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('roomCodeInput').addEventListener('input', function () {
+        this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    });
+</script>
 </body>
 </html>

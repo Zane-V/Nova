@@ -39,6 +39,9 @@ public class CoursePost {
     /** Relative path to the uploaded video when contentType = VIDEO */
     private String videoPath;
 
+    /** Path to the uploaded document file when contentType = TEXT */
+    private String documentPath;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
