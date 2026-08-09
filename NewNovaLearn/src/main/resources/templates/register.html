@@ -244,7 +244,14 @@
         const emailHidden = document.getElementById('email');
         
         function updateEmail() {
-            emailHidden.value = emailPrefix.value.trim().length > 0 ? emailPrefix.value.trim() + '@gmail.com' : '';
+            const val = emailPrefix.value.trim();
+            if (val.includes('@')) {
+                emailPrefix.setCustomValidity("Please do not include '@' or domain name (e.g. gmail.com) here.");
+                emailPrefix.reportValidity();
+            } else {
+                emailPrefix.setCustomValidity('');
+            }
+            emailHidden.value = val.length > 0 ? val + '@gmail.com' : '';
         }
         emailPrefix.addEventListener('input', updateEmail);
         updateEmail();
