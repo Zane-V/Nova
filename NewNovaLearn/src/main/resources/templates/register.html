@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="/assets/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Outfit', sans-serif; background: #f8fafc; min-height: 100vh; display: flex; align-items: stretch; }
@@ -162,9 +163,9 @@
                 <input type="text" class="form-control" id="fullName" th:field="*{fullName}" placeholder="Enter your full name" required>
             </div>
 
-            <div class="mb-3">
+            <div class="mb-3" id="nicknameGroup">
                 <label class="form-label" for="nickname">Nickname</label>
-                <input type="text" class="form-control" id="nickname" th:field="*{nickname}" placeholder="What should we call you?" required>
+                <input type="text" class="form-control" id="nickname" th:field="*{nickname}" placeholder="What should we call you?">
             </div>
 
             <div class="mb-3">
@@ -221,6 +222,18 @@
         document.getElementById('role-lecturer').checked = role === 'LECTURER';
         document.getElementById('btn-student').className = 'role-btn' + (role === 'STUDENT' ? ' active' : '');
         document.getElementById('btn-lecturer').className = 'role-btn' + (role === 'LECTURER' ? ' active' : '');
+        
+        const nicknameGroup = document.getElementById('nicknameGroup');
+        const nicknameInput = document.getElementById('nickname');
+        const fullNameInput = document.getElementById('fullName');
+        
+        if (role === 'LECTURER') {
+            nicknameGroup.style.display = 'none';
+            nicknameInput.required = false;
+        } else {
+            nicknameGroup.style.display = 'block';
+            nicknameInput.required = true;
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -298,6 +311,10 @@
         });
 
         document.getElementById('registerForm').addEventListener('submit', function (e) {
+            const roleLecturer = document.getElementById('role-lecturer').checked;
+            if (roleLecturer) {
+                document.getElementById('nickname').value = document.getElementById('fullName').value;
+            }
             const val = pwdInput.value;
             if (!(val.length >= 8 && /[A-Za-z]/.test(val) && /[0-9]/.test(val))) {
                 e.preventDefault();

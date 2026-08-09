@@ -50,6 +50,7 @@ public class HomeController {
     private final CourseService courseService;
     private final CloudinaryService cloudinaryService;
     private final PasswordEncoder passwordEncoder;
+    private final com.novalearn.novalearn.repository.EnrollmentRepository enrollmentRepository;
 
     // Removed in-memory rate limiting as it is now database-backed
 
@@ -57,12 +58,15 @@ public class HomeController {
     private String uploadDir;
 
     public HomeController(UserService userService, EmailService emailService,
-                          CourseService courseService, CloudinaryService cloudinaryService, PasswordEncoder passwordEncoder) {
+                          CourseService courseService, CloudinaryService cloudinaryService,
+                          PasswordEncoder passwordEncoder,
+                          com.novalearn.novalearn.repository.EnrollmentRepository enrollmentRepository) {
         this.userService = userService;
         this.emailService = emailService;
         this.courseService = courseService;
         this.cloudinaryService = cloudinaryService;
         this.passwordEncoder = passwordEncoder;
+        this.enrollmentRepository = enrollmentRepository;
     }
 
     // ── Helper: resolve the current user from Principal ──────────────────────
@@ -183,10 +187,12 @@ public class HomeController {
     @GetMapping("/student-dashboard")
     public String studentDashboard(
             @RequestParam(required = false) String success,
+            @RequestParam(required = false) String deleteError,
             Principal principal,
             Model model) {
         model.addAttribute("role", "student");
         if (success != null) model.addAttribute("successMessage", success);
+        if (deleteError != null) model.addAttribute("deleteError", deleteError);
         currentUser(principal).ifPresent(u -> {
             model.addAttribute("nickname", u.getNickname());
             model.addAttribute("fullName", u.getFullName());
@@ -206,10 +212,12 @@ public class HomeController {
     @GetMapping("/lecturer-dashboard")
     public String lecturerDashboard(
             @RequestParam(required = false) String success,
+            @RequestParam(required = false) String deleteError,
             Principal principal,
             Model model) {
         model.addAttribute("role", "lecturer");
         if (success != null) model.addAttribute("successMessage", success);
+        if (deleteError != null) model.addAttribute("deleteError", deleteError);
         currentUser(principal).ifPresent(u -> {
             model.addAttribute("nickname", u.getNickname());
             model.addAttribute("fullName", u.getFullName());
@@ -303,8 +311,10 @@ public class HomeController {
 
             boolean isOwner = course.getLecturer() != null &&
                     u.getEmail().equals(course.getLecturer().getEmail());
+            boolean isLecturer = u.getRole() == com.novalearn.novalearn.model.Role.LECTURER;
             model.addAttribute("isOwner", isOwner);
-            model.addAttribute("role", isOwner ? "lecturer" : "student");
+            model.addAttribute("isLecturer", isLecturer);
+            model.addAttribute("role", isOwner ? "lecturer" : (isLecturer ? "lecturer" : "student"));
 
             boolean isEnrolled = !isOwner && courseService.isEnrolled(u, course);
             model.addAttribute("isEnrolled", isEnrolled);
@@ -556,5 +566,65 @@ public class HomeController {
             session.invalidate();
         }
         return "redirect:/login?logout=true";
+    }
+
+    // ── Delete Course (owner only) ───────────────────────────────────────
+
+    @PostMapping("/course/{id}/delete")
+    @PreAuthorize("hasRole('LECTURER')")
+    public String deleteCourse(@PathVariable Long id, Principal principal) {
+        currentUser(principal).ifPresent(u -> courseService.deleteCourse(id, u));
+        return "redirect:/lecturer-dashboard?success=Course+deleted+successfully";
+    }
+
+    // ── Delete Post (course owner only) ───────────────────────────────
+
+    @PostMapping("/post/{id}/delete")
+    @PreAuthorize("hasRole('LECTURER')")
+    public String deletePost(@PathVariable Long id, @RequestParam Long courseId, Principal principal) {
+        currentUser(principal).ifPresent(u -> courseService.deletePost(id, u));
+        return "redirect:/course/" + courseId;
+    }
+
+    // ── Edit Post topic/text (course owner only) ────────────────────────
+
+    @PostMapping("/post/{id}/edit")
+    @PreAuthorize("hasRole('LECTURER')")
+    public String editPost(@PathVariable Long id,
+                           @RequestParam Long courseId,
+                           @RequestParam(required = false) String topic,
+                           @RequestParam(required = false) String textContent,
+                           Principal principal) {
+        currentUser(principal).ifPresent(u -> courseService.editPost(id, topic, textContent, u));
+        return "redirect:/course/" + courseId;
+    }
+
+    // ── Delete Account (password-verified) ────────────────────────────
+
+    @PostMapping("/delete-account")
+    public String deleteAccount(@RequestParam String confirmPassword,
+                                Principal principal,
+                                HttpServletRequest request) {
+        Optional<User> optUser = currentUser(principal);
+        if (optUser.isPresent()) {
+            User u = optUser.get();
+            if (passwordEncoder.matches(confirmPassword, u.getPassword())) {
+                // Detach lecturer courses (keep them in DB) and remove student enrollments
+                enrollmentRepository.deleteByStudent(u);
+                courseService.detachUserCourses(u);
+                userService.deleteUser(u);
+                // Invalidate session
+                HttpSession session = request.getSession(false);
+                if (session != null) session.invalidate();
+                org.springframework.security.core.context.SecurityContextHolder.clearContext();
+                return "redirect:/login?accountDeleted=true";
+            } else {
+                // Wrong password — redirect back to whichever dashboard with error
+                String role = u.getRole().name();
+                String dash = role.equals("LECTURER") ? "/lecturer-dashboard" : "/student-dashboard";
+                return "redirect:" + dash + "?deleteError=Incorrect+password";
+            }
+        }
+        return "redirect:/login";
     }
 }

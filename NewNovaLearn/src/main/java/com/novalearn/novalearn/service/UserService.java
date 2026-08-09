@@ -25,22 +25,13 @@ public class UserService {
         if (fullName == null || fullName.trim().isBlank()) {
             throw new IllegalArgumentException("Full Name is required.");
         }
-        if (nickname == null || nickname.trim().isBlank()) {
-            throw new IllegalArgumentException("Nickname is required.");
-        }
-        if (email == null || email.trim().isBlank()) {
-            throw new IllegalArgumentException("Email Address is required.");
-        }
-
-        // 1. Uniqueness Checks
-        if (userRepository.existsByEmail(email.trim())) {
-            throw new IllegalArgumentException("An account with this email address already exists.");
-        }
-        if (userRepository.existsByFullName(fullName.trim())) {
-            throw new IllegalArgumentException("An account with this full name already exists.");
-        }
-        if (userRepository.existsByNickname(nickname.trim())) {
-            throw new IllegalArgumentException("This nickname is already taken by another user.");
+        if (role == Role.STUDENT) {
+            if (nickname == null || nickname.trim().isBlank()) {
+                throw new IllegalArgumentException("Nickname is required.");
+            }
+            if (userRepository.existsByNickname(nickname.trim())) {
+                throw new IllegalArgumentException("This nickname is already taken by another user.");
+            }
         }
 
         // 2. Password Rules
@@ -51,9 +42,12 @@ public class UserService {
             throw new IllegalArgumentException("Password must contain at least one letter and one number.");
         }
 
+        // For lecturers, nickname defaults to full name
+        String resolvedNickname = (role == Role.LECTURER) ? fullName.trim() : nickname.trim();
+
         User user = User.builder()
                 .fullName(fullName.trim())
-                .nickname(nickname.trim())
+                .nickname(resolvedNickname)
                 .email(email.trim())
                 .password(passwordEncoder.encode(password))
                 .role(role)
@@ -94,5 +88,9 @@ public class UserService {
     
     public void save(User user) {
         userRepository.save(user);
+    }
+
+    public void deleteUser(User user) {
+        userRepository.delete(user);
     }
 }

@@ -294,12 +294,21 @@
                         <i class="fas fa-check-circle"></i> Enrolled
                     </div>
                 </div>
+
+                <!-- Owner Actions -->
+                <div th:if="${isOwner}" style="display:flex; gap:0.5rem;">
+                    <button type="button" class="btn btn-danger btn-sm"
+                            style="font-weight:600; border-radius:8px; font-size:0.85rem;"
+                            onclick="document.getElementById('deleteCourseModal').style.display='flex'">
+                        <i class="fas fa-trash"></i> Delete Course
+                    </button>
+                </div>
             </div>
             <p class="cd-description" th:text="${course.description}" style="margin-top: 1rem;"></p>
         </div>
 
-        <!-- Only visible if enrolled or is owner -->
-        <th:block th:if="${isOwner or isEnrolled}">
+        <!-- Only visible if enrolled, is owner, or is any lecturer -->
+        <th:block th:if="${isOwner or isEnrolled or isLecturer}">
             <!-- Primary Content -->
             <div class="cd-content-card">
                 <h3>
@@ -365,11 +374,30 @@
                 <p>No topic posts yet. Add your first one below.</p>
             </div>
 
-            <!-- Post cards -->
+                    <!-- Post cards -->
             <div th:each="post : ${posts}" class="post-card">
                 <div class="post-card-header">
                     <span class="post-card-topic"><i class="fas fa-bookmark" style="color:#5c4dff;margin-right:0.35rem;"></i><span th:text="${post.topic}">Topic</span></span>
-                    <span class="post-card-meta" th:text="${#temporals.format(post.createdAt, 'dd MMM yyyy, HH:mm')}"></span>
+                    <div style="display:flex; align-items:center; gap:0.75rem;">
+                        <span class="post-card-meta" th:text="${#temporals.format(post.createdAt, 'dd MMM yyyy, HH:mm')}"></span>
+                        <!-- Edit/Delete buttons (owner only) -->
+                        <div th:if="${isOwner}" style="display:flex; gap:0.4rem;">
+                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                                    style="font-size:0.75rem; border-radius:6px; padding:0.2rem 0.55rem;"
+                                    th:attr="onclick='openEditModal(' + ${post.id} + ', \'' + ${post.topic} + '\', \'' + (${post.textContent} ?: '') + '\',' + ${course.id} + ')'"
+                                    th:if="${post.contentType == 'TEXT'}">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <form th:action="@{/post/{pid}/delete(pid=${post.id})}" method="POST" style="margin:0;">
+                                <input type="hidden" name="courseId" th:value="${course.id}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger"
+                                        style="font-size:0.75rem; border-radius:6px; padding:0.2rem 0.55rem;"
+                                        onclick="return confirm('Delete this post?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
                 <div class="post-card-body">
                     <!-- Video post -->
@@ -403,7 +431,7 @@
         </div>
         </th:block>
 
-        <th:block th:unless="${isOwner or isEnrolled}">
+        <th:block th:unless="${isOwner or isEnrolled or isLecturer}">
             <div style="text-align:center; padding: 4rem 2rem; background: white; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 2rem;">
                 <i class="fas fa-lock" style="font-size: 3rem; color: #d0d5e8; margin-bottom: 1rem; display: block;"></i>
                 <h3 style="font-size: 1.25rem; font-weight: 700; color: #1a1a24; margin-bottom: 0.5rem;">Content Locked</h3>
@@ -488,41 +516,86 @@
             const textPanel = document.getElementById('postTextPanel');
             const btnV = document.getElementById('postBtnVideo');
             const btnT = document.getElementById('postBtnText');
-
             if (type === 'VIDEO') {
-                videoPanel.classList.remove('hidden');
-                textPanel.classList.remove('visible');
-                btnV.classList.add('active');
-                btnT.classList.remove('active');
+                videoPanel.classList.remove('hidden'); textPanel.classList.remove('visible');
+                btnV.classList.add('active'); btnT.classList.remove('active');
             } else {
-                videoPanel.classList.add('hidden');
-                textPanel.classList.add('visible');
-                btnV.classList.remove('active');
-                btnT.classList.add('active');
+                videoPanel.classList.add('hidden'); textPanel.classList.add('visible');
+                btnV.classList.remove('active'); btnT.classList.add('active');
             }
         }
-
         function postFileChosen(input) {
             const label = document.getElementById('postFileLabel');
             if (input.files && input.files.length > 0) {
-                const f = input.files[0];
-                const mb = (f.size / (1024 * 1024)).toFixed(1);
+                const f = input.files[0]; const mb = (f.size / (1024 * 1024)).toFixed(1);
                 label.innerHTML = 'Selected: <strong>' + f.name + '</strong> (' + mb + ' MB)';
-            } else {
-                label.textContent = 'No file selected';
-            }
+            } else { label.textContent = 'No file selected'; }
         }
-
         function postDocFileChosen(input) {
             const label = document.getElementById('postDocFileLabel');
             if (input.files && input.files.length > 0) {
-                const f = input.files[0];
-                const mb = (f.size / (1024 * 1024)).toFixed(1);
+                const f = input.files[0]; const mb = (f.size / (1024 * 1024)).toFixed(1);
                 label.innerHTML = 'Selected: <strong>' + f.name + '</strong> (' + mb + ' MB)';
-            } else {
-                label.textContent = 'No file selected';
-            }
+            } else { label.textContent = 'No file selected'; }
         }
+
+        /* ── Edit Post Modal ── */
+        function openEditModal(postId, topic, text, courseId) {
+            document.getElementById('editPostId').value = postId;
+            document.getElementById('editCourseId').value = courseId;
+            document.getElementById('editTopic').value = topic;
+            document.getElementById('editText').value = text;
+            document.getElementById('editPostModal').style.display = 'flex';
+        }
+        function closeEditModal() { document.getElementById('editPostModal').style.display = 'none'; }
+        function closeDeleteCourseModal() { document.getElementById('deleteCourseModal').style.display = 'none'; }
+    </script>
+
+    <!-- ── Edit Post Modal ── -->
+    <div id="editPostModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:white; border-radius:16px; padding:2rem; width:100%; max-width:480px; box-shadow:0 20px 60px rgba(0,0,0,0.2); position:relative;">
+            <button onclick="closeEditModal()" style="position:absolute;top:1rem;right:1rem;border:none;background:none;font-size:1.2rem;cursor:pointer;color:#6b7280;"><i class="fas fa-times"></i></button>
+            <h4 style="font-weight:800; margin-bottom:1.25rem;"><i class="fas fa-pen" style="color:#5c4dff;"></i> Edit Post</h4>
+            <form id="editPostForm" method="POST">
+                <input type="hidden" id="editPostId" name="postId">
+                <input type="hidden" id="editCourseId" name="courseId">
+                <div style="margin-bottom:1rem;">
+                    <label style="font-size:0.85rem;font-weight:600;color:#374151;">Topic Title</label>
+                    <input type="text" id="editTopic" name="topic" style="width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:0.7rem 1rem;margin-top:0.35rem;font-family:inherit;font-size:0.95rem;">
+                </div>
+                <div style="margin-bottom:1.25rem;">
+                    <label style="font-size:0.85rem;font-weight:600;color:#374151;">Content</label>
+                    <textarea id="editText" name="textContent" rows="5" style="width:100%;border:1.5px solid #e5e7eb;border-radius:10px;padding:0.75rem 1rem;margin-top:0.35rem;font-family:inherit;font-size:0.9rem;resize:vertical;"></textarea>
+                </div>
+                <button type="submit" style="width:100%;padding:0.8rem;border:none;border-radius:10px;background:linear-gradient(135deg,#5c4dff,#7c3aed);color:white;font-weight:700;font-size:0.95rem;cursor:pointer;">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ── Delete Course Confirmation Modal ── -->
+    <div id="deleteCourseModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:9999; align-items:center; justify-content:center;">
+        <div style="background:white; border-radius:16px; padding:2rem; width:100%; max-width:420px; box-shadow:0 20px 60px rgba(0,0,0,0.2); text-align:center; position:relative;">
+            <button onclick="closeDeleteCourseModal()" style="position:absolute;top:1rem;right:1rem;border:none;background:none;font-size:1.2rem;cursor:pointer;color:#6b7280;"><i class="fas fa-times"></i></button>
+            <div style="width:64px;height:64px;border-radius:16px;background:#fff0f0;display:flex;align-items:center;justify-content:center;margin:0 auto 1.25rem;"><i class="fas fa-trash" style="font-size:1.6rem;color:#ef4444;"></i></div>
+            <h4 style="font-weight:800; margin-bottom:0.5rem;">Delete This Course?</h4>
+            <p style="color:#6b7280;font-size:0.9rem;margin-bottom:1.5rem;">All posts and enrollments for this course will be permanently removed. The course record stays in the system. This cannot be undone.</p>
+            <div style="display:flex;gap:0.75rem;">
+                <button onclick="closeDeleteCourseModal()" style="flex:1;padding:0.75rem;border:1.5px solid #e5e7eb;background:white;border-radius:10px;font-weight:600;cursor:pointer;">Cancel</button>
+                <form th:action="@{/course/{id}/delete(id=${course.id})}" method="POST" style="flex:1;margin:0;">
+                    <button type="submit" style="width:100%;padding:0.75rem;border:none;background:#ef4444;color:white;border-radius:10px;font-weight:700;cursor:pointer;">Yes, Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* Set edit form action dynamically */
+        document.getElementById('editPostForm').addEventListener('submit', function(e) {
+            const pid = document.getElementById('editPostId').value;
+            this.action = '/post/' + pid + '/edit';
+        });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 </body>

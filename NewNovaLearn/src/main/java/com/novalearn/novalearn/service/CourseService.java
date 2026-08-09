@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -141,5 +142,43 @@ public class CourseService {
                 .contentType("TEXT").textContent(textContent).documentPath(documentPath)
                 .build();
         return coursePostRepository.save(post);
+    }
+
+    @Transactional
+    public void deleteCourse(Long courseId, User requester) {
+        Course course = courseRepository.findById(courseId).orElseThrow();
+        if (course.getLecturer() != null && course.getLecturer().getId().equals(requester.getId())) {
+            enrollmentRepository.deleteByCourse(course);
+            coursePostRepository.deleteByCourse(course);
+            courseRepository.delete(course);
+        }
+    }
+
+    @Transactional
+    public void deletePost(Long postId, User requester) {
+        CoursePost post = coursePostRepository.findById(postId).orElseThrow();
+        if (post.getCourse().getLecturer() != null && post.getCourse().getLecturer().getId().equals(requester.getId())) {
+            coursePostRepository.delete(post);
+        }
+    }
+
+    @Transactional
+    public CoursePost editPost(Long postId, String topic, String textContent, User requester) {
+        CoursePost post = coursePostRepository.findById(postId).orElseThrow();
+        if (post.getCourse().getLecturer() != null && post.getCourse().getLecturer().getId().equals(requester.getId())) {
+            if (topic != null) post.setTopic(topic);
+            if (textContent != null) post.setTextContent(textContent);
+            return coursePostRepository.save(post);
+        }
+        return post;
+    }
+
+    @Transactional
+    public void detachUserCourses(User user) {
+        List<Course> courses = courseRepository.findByLecturer(user);
+        for (Course c : courses) {
+            c.setLecturer(null);
+            courseRepository.save(c);
+        }
     }
 }
