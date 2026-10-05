@@ -34,5 +34,7 @@ build/
 
 ### Custom Exclusions ###
 .env
+*.env
 uploads/
 server.log
+logs/
